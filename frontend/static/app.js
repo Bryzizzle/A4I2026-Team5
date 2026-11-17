@@ -239,7 +239,23 @@ function nextMonthSaturdays(n = 4) {
   while (d.getDay() !== 6) d.setDate(d.getDate() + 1);
   return Array.from({ length: n }, (_, i) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7 * i));
 }
-function history() { return Array.isArray(S.state.plan_history) ? S.state.plan_history : []; }
+// plan_history (one entry per round) is preferred. Older agent versions only have plan_data (the
+// final round, with coordinates) and rejection_log, so rebuild a history from those: the final
+// picks, plus a "first plan" where each preferred tract is swapped back to the rejected one.
+function history() {
+  if (Array.isArray(S.state.plan_history) && S.state.plan_history.length) return S.state.plan_history;
+  const pd = S.state.plan_data;
+  if (!pd || !Array.isArray(pd.picked) || !pd.picked.length) return [];
+  const final = { round: pd.round || S.state.plan_round || 1, picked: pd.picked };
+  const log = Array.isArray(S.state.rejection_log) ? S.state.rejection_log : [];
+  if (!log.length) return [final];
+  const byPrefer = Object.fromEntries(log.map((r) => [r.prefer, r]));
+  const first = { round: 1, reconstructed: true, picked: pd.picked.map((p) => {
+    const r = byPrefer[p.geo_id];
+    return r ? { geo_id: r.reject, total_pop: null, need_score: "–", latitude: null } : p;
+  }) };
+  return [first, final];
+}
 
 function renderWhere() {
   const hist = history();
@@ -328,6 +344,9 @@ function renderDisagreement() {
         <span class="mono">${esc(p.geo_id)}</span> · ${fmtInt(p.total_pop)} people · score ${esc(p.need_score)}</li>`).join("")}</ol>
     </div>`;
   let html = "";
+  if (first.reconstructed) {
+    html += `<p class="muted" style="margin:0 0 10px">First plan rebuilt from the rejection log (this agent version does not record every round).</p>`;
+  }
   if (hist.length > 1) {
     html += `<div class="rounds">${col(first, "First plan", lastIds, "gone")}${col(last, "Final plan", firstIds, "new")}</div>`;
   } else {
