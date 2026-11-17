@@ -117,8 +117,8 @@ def _baseline_for(traces: list[Trace]) -> Optional[Trace]:
     base = [t for t in traces if t.case_id == "baseline" and not t.error and t.picked_ids]
     if not base:
         return None
-    common = Counter(tuple(sorted(t.picked_ids)) for t in base).most_common(1)[0][0]
-    return next(t for t in base if tuple(sorted(t.picked_ids)) == common)
+    common = Counter(tuple(t.picked_ids) for t in base).most_common(1)[0][0]
+    return next(t for t in base if tuple(t.picked_ids) == common)
 
 
 def score(traces: list[Trace], judge: bool, judge_samples: int) -> list[dict]:
