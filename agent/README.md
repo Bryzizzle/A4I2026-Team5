@@ -1,5 +1,7 @@
 # Team 5: the Clinic Plan agents
 
+**System diagram and design rationale:** [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
+
 ## Run it (Cloud Shell, from the repo root)
 
 **Prerequisite:** run `bash data/run_sql.sh` once to build the views.
