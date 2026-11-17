@@ -1,0 +1,31 @@
+table,column,source,scale,measured_or_modeled,notes
+burden_tracts,pct_uninsured,CDC PLACES 2025,census tract,modeled,Adults 18-64 only. Our headline uninsured number.
+burden_tracts,pct_uninsured_all_ages,CDC/ATSDR SVI 2022 (ACS),census tract,survey estimate,All ages; reads lower where tracts skew 65+ (Medicare). Do not quote alongside pct_uninsured without saying so.
+burden_tracts,uninsured_gap,derived,census tract,derived,pct_uninsured minus pct_uninsured_all_ages; a signal about age structure.
+burden_tracts,pct_checkup,CDC PLACES 2025,census tract,modeled,Adults WITH a routine visit in the past year. LOW is bad.
+burden_tracts,pct_diabetes,CDC PLACES 2025,census tract,modeled,Prevalence estimate not a count.
+burden_tracts,pct_high_bp,CDC PLACES 2025,census tract,modeled,Prevalence estimate not a count.
+burden_tracts,pct_copd,CDC PLACES 2025,census tract,modeled,Prevalence estimate not a count.
+burden_tracts,pct_asthma,CDC PLACES 2025,census tract,modeled,Prevalence estimate not a count.
+burden_tracts,pct_mobility_difficulty,CDC PLACES 2025,census tract,modeled,Source column has a trailing underscore (mobility_crudeprev_).
+burden_tracts,pct_lack_transport,CDC PLACES 2025,census tract,modeled,NULL in 11 states incl. TX. Not scored for that reason.
+burden_tracts,pct_no_vehicle,CDC/ATSDR SVI 2022 (ACS),census tract,survey estimate,Vehicle OWNERSHIP not access to a ride. -999 sentinel nulled.
+burden_tracts,pctile_no_vehicle,CDC/ATSDR SVI 2022,census tract (ranked nationally),survey estimate,0-1 rank against every US tract.
+burden_tracts,pctile_uninsured,CDC/ATSDR SVI 2022,census tract (ranked nationally),survey estimate,0-1 rank against every US tract.
+burden_tracts,pct_age_65_plus,CDC/ATSDR SVI 2022 (ACS),census tract,survey estimate,
+burden_tracts,pct_limited_english,CDC/ATSDR SVI 2022 (ACS),census tract,survey estimate,Drives which languages the flyer needs.
+burden_tracts,total_pop,CDC PLACES 2025,census tract,survey estimate,
+exposure_tracts,mean_pm,EPA/CDC daily PM2.5,12 km model grid (tract id is cosmetic),modeled,Cannot separate neighborhoods. County context and bad days only.
+exposure_tracts,days_over_35,EPA/CDC daily PM2.5,12 km model grid,modeled,Near thresholds a day counting is partly model error (ds_pm_stdd).
+tract_access,km_to_any_care,derived (PLACES centroid + HRSA/CMS points),tract centroid to facility point,measured (straight line),Upper bound: federal sites only; county line cuts off; not travel time.
+tract_access,km_to_safety_net,derived (PLACES centroid + HRSA/CMS points),tract centroid to facility point,measured (straight line),FQHC + HRSA Health Center sites. Upper bound.
+tract_access,extra_km_if_uninsured,derived,tract centroid to facility point,measured (straight line),km_to_safety_net minus km_to_any_care.
+care_sites,site_kind,HRSA + CMS,facility point,measured,Federal only. No free/county clinics or pharmacies.
+care_sites_state,TOT_OPER_HR_PER_WEEK,HRSA health center sites,facility point,reported,Opening hours as capacity; 0-168.
+shortage_areas,HPSA_SCORE,HRSA layer 11,mixed: tract or county GEO_ID,administrative designation,WHERE NEED IS. Empty in Fulton/Harris/Travis/Santa Clara.
+shortage_facilities,HPSA_SCORE,HRSA layer 9,facility point,administrative designation,WHERE CARE IS. Never UNION with shortage_areas.
+disease_weekly,percent_visits_covid,CDC NSSP,Health Service Area (multi-county),measured,Written onto every county in the HSA. Never a neighborhood claim. All NULL in Santa Clara and Bronx.
+disease_weekly,percent_visits_influenza,CDC NSSP,Health Service Area (multi-county),measured,Same caveat.
+disease_weekly,percent_visits_rsv,CDC NSSP,Health Service Area (multi-county),measured,Same caveat.
+v_van_need,need_score,derived (team definition),census tract,derived from modeled + measured,Weighted within-county percentile ranks. See data/sql/02_v_van_need.sql.
+v_equity_audit_base,hispanic_pop / black_pop / white_pop / asian_pop,Census ACS 5-year (bigquery-public-data),census tract,survey estimate,AUDIT ONLY. Never a planner input.
