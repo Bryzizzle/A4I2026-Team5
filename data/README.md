@@ -62,6 +62,8 @@ bash data/run_sql.sh          # validate, then build the views; safe to re-run
 | `sql/04_v_equity_audit.sql` | `v_equity_audit_base`, `v_equity_audit_top_decile`: tracts joined to Census ACS race and poverty | **auditor only** |
 | `sql/queries/audit_plan.sql` | parameterized audit of a specific plan (`@tract_ids ARRAY<STRING>`) | **auditor only** |
 | `saturdays.py` | `pick_saturdays()`: ranked rows → 4 spaced Saturdays + why each runner-up lost | planner / explainer tool |
+| `plan_saturdays.py` | runs the picker on live `v_van_need` rows; `--audit` adds the auditor-only audit of the 4 picks | planner (audit part: auditor) |
+| `FINDINGS.md` | Fulton results in plain language, for the story lane | everyone |
 | `column_provenance.csv` | every column → source, scale, measured or modeled | everyone; feed it to the agents |
 
 ### What "needs the van" means here (defend this on stage)
