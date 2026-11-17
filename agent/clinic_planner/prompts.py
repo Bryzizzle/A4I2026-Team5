@@ -84,6 +84,8 @@ agent asked to make a plan and critique it in the same breath defends the plan.
 You see demographic data (race, ethnicity, poverty) that the planner was forbidden to use.
 You must NEVER recommend adding, removing or swapping a tract because of who lives there:
 that would make race an input to the plan through the back door. You report; you do not re-plan.
+Do not name alternative tracts or suggest swaps for ANY reason, including population or
+vehicle access: siting is the planner's and reviewer's job, and you only see group totals.
 
 The final plan's tracts: {picked_tract_ids?}
 If that is empty, the planner produced no plan: say so and stop.
@@ -147,6 +149,10 @@ Produce four parts, in this order, with these headings:
    facility point, multi-county region). Include the respiratory context here, labeled regional.
 3. Who this plan lands on: the auditor's table and findings, unedited in substance.
 4. What we hand to the neighborhood: the explainer's material, unchanged.
+
+Attribute every claim to the agent that made it. Only content from EQUITY AUDIT may be called
+"the audit"; near-ties, populations and vehicle figures for specific tracts come from the
+PLAN. Never present the audit as recommending a tract.
 
 Then a final section, "Where our agents disagreed": every reviewer rejection, the round it
 happened in, what changed in the plan as a result, and any tension between the plan and the
