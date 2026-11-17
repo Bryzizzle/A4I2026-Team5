@@ -27,9 +27,10 @@ BigQuery views, MCP Toolbox on `TOOLBOX_URL`, and `.env`).
 
 To keep Toolbox up while you run evals, start `bash agent/run_local.sh` in a second terminal
 (it leaves Toolbox on :5000 while `adk web` runs).
+The harness loads `clinic_planner/.env` for live runs and `--judge`, preserving exported variables.
 
 A full case takes a minute or two. `run` writes `evals/results/<timestamp>/report.md` and exits 1
-if any **critical** check failed, so it can gate a merge.
+if any **critical** check failed or errored. The CLI rejects empty trace inputs and repeats below one.
 
 ## What is checked
 
@@ -72,7 +73,7 @@ worth testing.
 - **Rules first, judge second.** A rule check is free, instant and gives the same answer every
   time; it is the ground truth. The judge covers what rules cannot read (tone, faithful
   translation, whether a refusal happened) and is the noisiest part, so it reports evidence quotes
-  and can majority-vote over `--judge-samples`. Unparseable judge output is ERROR, never PASS.
+  and can majority-vote over `--judge-samples`. A verdict needs a majority of all requested samples.
   Prefer a judge model other than the agents' own: set `A4I_JUDGE_MODEL`.
 - **The evals are tested.** `test_evals.py` proves every check passes a known-good run *and*
   fails on a fault planted for it, and fails if a check is added without one. Building those

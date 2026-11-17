@@ -22,7 +22,7 @@ from typing import Callable, Optional
 
 from .trace import OUTPUT_KEYS, Trace, mentions_tract, short_id
 
-PASS, FAIL, NA = "PASS", "FAIL", "N/A"
+PASS, FAIL, NA, ERROR = "PASS", "FAIL", "N/A", "ERROR"
 
 PLANNER_SIDE = ("need_scout", "coverage_scout", "respiratory_scout", "planner", "reviewer")
 SCOUT_TOOLS = {"need_scout": "top_need_tracts", "coverage_scout": "county_coverage",

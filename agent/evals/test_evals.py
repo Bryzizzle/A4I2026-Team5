@@ -14,9 +14,14 @@ import copy
 import json
 import re
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from evals import checks as C
+from evals import harness as H
 from evals import judge as J
 from evals.trace import OUTPUT_KEYS, Trace
 
@@ -265,6 +270,61 @@ class JudgeWithFakeModel(unittest.TestCase):
         t = trace(copy.deepcopy(GOLDEN))
         res = J.run_judges(t, {"id": "baseline"}, call_model=lambda p: "sure, looks fine")
         self.assertTrue(all(r.status == "ERROR" for r in res if r.status != C.NA))
+
+    def test_a_verdict_needs_a_majority_of_requested_samples(self):
+        t = trace(copy.deepcopy(GOLDEN))
+        for replies, expected in (
+            (["PASS", None, None], C.ERROR),
+            (["PASS", "FAIL", None], C.ERROR),
+            (["FAIL", "FAIL", None], C.FAIL),
+            (["PASS", "PASS", None], C.PASS),
+        ):
+            with self.subTest(replies=replies):
+                verdicts = iter(replies * 5)
+
+                def fake(_):
+                    verdict = next(verdicts)
+                    return json.dumps({"verdict": verdict}) if verdict else "invalid"
+
+                results = J.run_judges(t, {"id": "baseline"}, call_model=fake, samples=3)
+                self.assertTrue(all(r.status == expected for r in results if r.status != C.NA))
+
+
+class HarnessCLI(unittest.TestCase):
+    def test_loads_configuration_before_recording(self):
+        with TemporaryDirectory() as out, redirect_stdout(StringIO()):
+            with patch.object(H, "_load_agent_env") as load_env, patch.object(H, "record") as record:
+                async def recorded(*args):
+                    load_env.assert_called_once_with()
+                    return [trace(copy.deepcopy(GOLDEN))]
+
+                record.side_effect = recorded
+                self.assertEqual(H.main(["run", "--cases", "baseline", "--out", out]), 0)
+
+    def test_requires_at_least_one_trace(self):
+        with TemporaryDirectory() as empty, redirect_stderr(StringIO()) as stderr:
+            for args, message in ((["score", empty], "no trace files found"),
+                                  (["run", "--repeat", "0"], "--repeat must be at least 1")):
+                with self.subTest(args=args), self.assertRaises(SystemExit) as error:
+                    H.main(args)
+                self.assertEqual(error.exception.code, 2)
+                self.assertIn(message, stderr.getvalue())
+
+    def test_critical_judge_errors_block_default_gate(self):
+        def unavailable(_):
+            raise RuntimeError("judge unavailable")
+
+        fixture = H.HERE / "fixtures" / "golden_trace.json"
+        with TemporaryDirectory() as out, redirect_stdout(StringIO()):
+            args = ["score", str(fixture), "--judge", "--out", out]
+            with patch.object(H, "_load_agent_env") as load_env:
+                with patch.object(J, "gemini_caller", return_value=unavailable):
+                    self.assertEqual(H.main(args), 1)
+                    load_env.assert_called_once_with()
+                    self.assertEqual(H.main(args + ["--fail-on", "none"]), 0)
+            report = (Path(out) / "report.md").read_text()
+            self.assertIn("1 critical failure(s) or error(s)", report)
+            self.assertIn("**critical ERROR** `judge.auditor_reports_only`", report)
 
 
 if __name__ == "__main__":
