@@ -13,11 +13,21 @@ set -euo pipefail
 PROJECT="${PROJECT:-$(gcloud config get-value project 2>/dev/null || true)}"
 REGION="${REGION:-us-central1}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
-UI_SA="clinic-ui@${PROJECT}.iam.gserviceaccount.com"
 ID_FILE="${HERE}/../agent/.agent_runtime_id"
 
 [ -s "${ID_FILE}" ] || { echo "No agent/.agent_runtime_id. Run: bash agent/deploy_agent_runtime.sh" >&2; exit 1; }
 AGENT_RUNTIME_ID="$(cat "${ID_FILE}")"
+
+# Cloud Shell sometimes loses the gcloud project after a reconnect. Recover it from the Agent
+# Runtime resource name (projects/<number>/...), which gcloud can map back to the project id.
+if [ -z "${PROJECT}" ] || [ "${PROJECT}" = "(unset)" ]; then
+  PROJECT_NUMBER="$(echo "${AGENT_RUNTIME_ID}" | cut -d/ -f2)"
+  PROJECT="$(gcloud projects describe "${PROJECT_NUMBER}" --format 'value(projectId)' 2>/dev/null || true)"
+fi
+if [ -z "${PROJECT}" ]; then
+  echo "No project. Run: gcloud config set project YOUR_PROJECT_ID" >&2; exit 1
+fi
+UI_SA="clinic-ui@${PROJECT}.iam.gserviceaccount.com"
 echo "Project ${PROJECT}  Region ${REGION}"
 echo "Agent Runtime ${AGENT_RUNTIME_ID}"
 
