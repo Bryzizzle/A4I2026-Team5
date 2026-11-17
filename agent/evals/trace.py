@@ -16,6 +16,17 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
+OUTPUT_KEYS = {
+    "need_scout": "evidence_need",
+    "coverage_scout": "evidence_coverage",
+    "respiratory_scout": "evidence_respiratory",
+    "planner": "plan",
+    "reviewer": "review",
+    "auditor": "audit",
+    "explainer": "flyer",
+    "reporter": "clinic_plan",
+}
+
 
 def _get(d: dict, *names: str, default=None):
     """Read a key that may be camelCase (REST/by_alias) or snake_case (model_dump)."""
@@ -77,6 +88,7 @@ class Trace:
     responses: list[Response] = field(default_factory=list)
     texts: dict[str, list[str]] = field(default_factory=dict)
     spans: dict[str, tuple[float, float]] = field(default_factory=dict)
+    _final_texts: dict[str, str] = field(default_factory=dict, init=False)
 
     def __post_init__(self):
         for ev in self.events:
@@ -86,17 +98,26 @@ class Trace:
                 a, b = self.spans.get(author, (ts, ts))
                 self.spans[author] = (min(a, ts), max(b, ts))
             content = ev.get("content") or {}
+            text_parts = []
+            has_tool_part = False
             for part in content.get("parts") or []:
                 if part.get("thought"):
                     continue
                 fc = _get(part, "functionCall", "function_call")
                 fr = _get(part, "functionResponse", "function_response")
                 if fc:
+                    has_tool_part = True
                     self.calls.append(Call(author, fc.get("name", ""), fc.get("args") or {}))
                 elif fr:
+                    has_tool_part = True
                     self.responses.append(Response(author, fr.get("name", ""), fr.get("response")))
                 elif part.get("text"):
-                    self.texts.setdefault(author, []).append(part["text"])
+                    text_parts.append(part["text"])
+            if text_parts:
+                text = "".join(text_parts)
+                self.texts.setdefault(author, []).append(text)
+                if not ev.get("partial") and not has_tool_part:
+                    self._final_texts[author] = text
 
     # ---- loading ----------------------------------------------------------------------------
     @classmethod
@@ -113,9 +134,10 @@ class Trace:
 
     # ---- convenience ------------------------------------------------------------------------
     def text(self, author: str) -> str:
-        """The agent's final text output: its output_key in state if known, else its last text."""
-        t = self.texts.get(author) or []
-        return t[-1] if t else ""
+        """The saved output or the last complete text event for older traces."""
+        key = OUTPUT_KEYS.get(author)
+        saved = self.state.get(key) if key else None
+        return saved if isinstance(saved, str) else self._final_texts.get(author, "")
 
     def all_text(self, author: str) -> str:
         return "\n\n".join(self.texts.get(author) or [])

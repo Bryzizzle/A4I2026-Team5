@@ -17,10 +17,8 @@ import re
 from collections import Counter
 from typing import Callable, Optional
 
-from .checks import NA, Result
+from .checks import ERROR, FAIL, NA, PASS, Result
 from .trace import Trace
-
-ERROR = "ERROR"
 
 PREAMBLE = """You are grading one component of a public-health planning system that decides where a
 single mobile clinic van parks on four Saturdays. Grade ONLY against the question. Be strict: if the
@@ -97,7 +95,9 @@ def _parse(raw: str) -> Optional[dict]:
     except ValueError:
         return None
     v = str(d.get("verdict", "")).upper()
-    return d | {"verdict": v} if v in ("PASS", "FAIL") else None
+    if v not in (PASS, FAIL) or any(not isinstance(d.get(field, ""), str) for field in ("reason", "evidence")):
+        return None
+    return d | {"verdict": v}
 
 
 def gemini_caller(model: Optional[str] = None) -> Callable[[str], str]:
@@ -119,6 +119,7 @@ def gemini_caller(model: Optional[str] = None) -> Callable[[str], str]:
 def run_judges(trace: Trace, case: dict, call_model: Optional[Callable[[str], str]] = None,
                samples: int = 1) -> list[Result]:
     call_model = call_model or gemini_caller()
+    samples = max(1, samples)
     out = []
     for rub in _rubrics(trace, case):
         if rub.get("skip"):
@@ -129,23 +130,28 @@ def run_judges(trace: Trace, case: dict, call_model: Optional[Callable[[str], st
             out.append(Result(rub["id"], rub["group"], rub["severity"], NA, "nothing to grade", "judge"))
             continue
         verdicts = []
-        for _ in range(max(1, samples)):
+        for _ in range(samples):
             try:
                 verdicts.append(_parse(call_model(_prompt(rub))))
             except Exception as e:  # network, quota, safety block
                 verdicts.append({"verdict": ERROR, "reason": f"{type(e).__name__}: {e}"})
-        good = [v for v in verdicts if v and v["verdict"] in ("PASS", "FAIL")]
-        if not good:
-            reason = next((v.get("reason") for v in verdicts if v), "unparseable judge reply")
+        good = [v for v in verdicts if v and v["verdict"] in (PASS, FAIL)]
+        tally = Counter(v["verdict"] for v in good)
+        verdict, votes = tally.most_common(1)[0] if tally else (ERROR, 0)
+        if votes <= samples // 2:
+            reason = f"no majority across {samples} judge sample(s): {tally[PASS]} PASS, {tally[FAIL]} FAIL"
+            error = next((v["reason"] for v in verdicts if v and v["verdict"] == ERROR), None)
+            if error:
+                reason += f". {error}"
+            elif len(good) < samples:
+                reason += ". Unparseable judge reply"
             out.append(Result(rub["id"], rub["group"], rub["severity"], ERROR, reason, "judge"))
             continue
-        tally = Counter(v["verdict"] for v in good)
-        verdict = "FAIL" if tally["FAIL"] > tally["PASS"] else "PASS"
         pick = next(v for v in good if v["verdict"] == verdict)
         detail = pick.get("reason", "")
         if pick.get("evidence"):
             detail += f' Evidence: "{pick["evidence"]}"'
-        if len(good) > 1:
-            detail += f" ({tally['PASS']}/{len(good)} samples PASS)"
+        if samples > 1:
+            detail += f" ({votes}/{samples} samples {verdict})"
         out.append(Result(rub["id"], rub["group"], rub["severity"], verdict, detail.strip(), "judge"))
     return out

@@ -9,7 +9,7 @@ From agent/ (MCP Toolbox must be running on TOOLBOX_URL, e.g. started by run_loc
     python -m evals score evals/fixtures/golden_trace.json
 
 Each run writes evals/results/<timestamp>/: traces/*.json, results.json and report.md.
-Exit code is 1 when a critical check fails (use --fail-on none to always exit 0).
+Exit code is 1 when a critical check fails or errors (use --fail-on none to report only).
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from .checks import FAIL, NA, PASS, Result, run_checks
+from .checks import ERROR, FAIL, PASS, Result, run_checks
 from .trace import Trace, short_id
 
 HERE = Path(__file__).resolve().parent
@@ -55,6 +55,12 @@ JUDGE_QUESTIONS = {
 # =============================================================================================
 # Recording live runs
 # =============================================================================================
+
+def _load_agent_env() -> None:
+    from dotenv import load_dotenv
+
+    load_dotenv(HERE.parent / "clinic_planner" / ".env", override=False)
+
 
 async def record_one(case: dict, repeat: int, timeout: float) -> Trace:
     from google.adk.runners import InMemoryRunner
@@ -111,8 +117,8 @@ def _baseline_for(traces: list[Trace]) -> Optional[Trace]:
     base = [t for t in traces if t.case_id == "baseline" and not t.error and t.picked_ids]
     if not base:
         return None
-    common = Counter(tuple(sorted(t.picked_ids)) for t in base).most_common(1)[0][0]
-    return next(t for t in base if tuple(sorted(t.picked_ids)) == common)
+    common = Counter(tuple(t.picked_ids) for t in base).most_common(1)[0][0]
+    return next(t for t in base if tuple(t.picked_ids) == common)
 
 
 def score(traces: list[Trace], judge: bool, judge_samples: int) -> list[dict]:
@@ -149,6 +155,10 @@ def _pct(p: int, n: int) -> str:
     return f"{100 * p / n:.0f}% ({p}/{n})" if n else "n/a"
 
 
+def _blocks_gate(result: dict) -> bool:
+    return result["severity"] == "critical" and result["status"] in (FAIL, ERROR)
+
+
 def report(rows: list[dict], meta: dict) -> str:
     by_check: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
@@ -156,7 +166,7 @@ def report(rows: list[dict], meta: dict) -> str:
             by_check[r["check"]].append(r | {"case_id": row["case_id"], "repeat": row["repeat"],
                                              "trace": row["trace"]})
     all_r = [r for rs in by_check.values() for r in rs]
-    crit_fail = [r for r in all_r if r["severity"] == "critical" and r["status"] == FAIL]
+    critical_issues = sum(_blocks_gate(r) for r in all_r)
     p, n = _rate([r["status"] for r in all_r])
     runs = len(rows)
     errs = sum(1 for r in rows if r["error"])
@@ -166,19 +176,18 @@ def report(rows: list[dict], meta: dict) -> str:
          f"**{runs} run(s)** of {len({r['case_id'] for r in rows})} case(s); "
          f"{'rule checks + LLM judge' if meta.get('judge') else 'rule checks only'}. "
          f"Overall {_pct(p, n)} of graded checks pass. "
-         f"**{len(crit_fail)} critical failure(s).** {errs} run(s) errored."]
+         f"**{critical_issues} critical failure(s) or error(s).** {errs} run(s) errored."]
     if secs:
         L.append(f"Run time: median {statistics.median(secs):.0f}s, max {max(secs):.0f}s.")
     rounds = Counter(r["plan_round"] for r in rows if r["plan_round"])
     if rounds:
         L.append("Plan-review rounds: " + ", ".join(f"{k} round(s) × {v}" for k, v in sorted(rounds.items()))
                  + f". Runs with at least one rejection: {sum(1 for r in rows if r['rejections'])}/{runs}.")
-    L += ["", "## By area", "", "| Area | Pass rate | Critical failures |", "|---|---:|---:|"]
+    L += ["", "## By area", "", "| Area | Pass rate | Critical failures or errors |", "|---|---:|---:|"]
     for g, title in GROUP_TITLES.items():
         rs = [r for r in all_r if r["group"] == g]
         gp, gn = _rate([r["status"] for r in rs])
-        L.append(f"| {title} | {_pct(gp, gn)} | "
-                 f"{sum(1 for r in rs if r['severity'] == 'critical' and r['status'] == FAIL)} |")
+        L.append(f"| {title} | {_pct(gp, gn)} | {sum(_blocks_gate(r) for r in rs)} |")
 
     L += ["", "## The four judge questions", "", "| Question | Evidence checks | Pass rate |", "|---|---|---:|"]
     for q, ids in JUDGE_QUESTIONS.items():
@@ -186,12 +195,12 @@ def report(rows: list[dict], meta: dict) -> str:
         qp, qn = _rate([r["status"] for r in rs])
         L.append(f"| {q} | {', '.join(f'`{i}`' for i in ids)} | {_pct(qp, qn)} |")
 
-    L += ["", "## By case", "", "| Case | Runs | Pass rate | Failed checks | Picks |", "|---|---:|---:|---|---|"]
+    L += ["", "## By case", "", "| Case | Runs | Pass rate | Failures or errors | Picks |", "|---|---:|---:|---|---|"]
     for cid in dict.fromkeys(r["case_id"] for r in rows):
         rr = [r for r in rows if r["case_id"] == cid]
         st = [x["status"] for r in rr for x in r["results"]]
         cp, cn = _rate(st)
-        failed = sorted({x["check"] for r in rr for x in r["results"] if x["status"] == FAIL})
+        failed = sorted({x["check"] for r in rr for x in r["results"] if x["status"] in (FAIL, ERROR)})
         picks = {", ".join(map(short_id, r["picked"])) for r in rr if r["picked"]}
         L.append(f"| `{cid}` | {len(rr)} | {_pct(cp, cn)} | {', '.join(failed) or 'none'} | "
                  f"{' / '.join(sorted(picks)) or '—'} |")
@@ -202,16 +211,21 @@ def report(rows: list[dict], meta: dict) -> str:
           "| Check | Source | Severity | Pass rate | Note |", "|---|---|---|---:|---|"]
     for cid, rs in sorted(by_check.items()):
         cp, cn = _rate([r["status"] for r in rs])
-        note = "flaky" if 0 < cp < cn else ("not applicable" if cn == 0 else "")
-        L.append(f"| `{cid}` | {rs[0]['source']} | {rs[0]['severity']} | {_pct(cp, cn)} | {note} |")
+        notes = ["flaky"] if 0 < cp < cn else []
+        errors = sum(r["status"] == ERROR for r in rs)
+        if errors:
+            notes.append(f"{errors} error(s)")
+        elif not cn:
+            notes.append("not applicable")
+        L.append(f"| `{cid}` | {rs[0]['source']} | {rs[0]['severity']} | {_pct(cp, cn)} | {', '.join(notes)} |")
 
-    fails = [r for r in all_r if r["status"] in (FAIL, "ERROR")]
-    L += ["", f"## Failures ({len(fails)})", ""]
+    fails = [r for r in all_r if r["status"] in (FAIL, ERROR)]
+    L += ["", f"## Failures and errors ({len(fails)})", ""]
     if not fails:
         L.append("None.")
     order = {"critical": 0, "major": 1, "minor": 2}
     for r in sorted(fails, key=lambda r: (order.get(r["severity"], 3), r["check"], r["case_id"])):
-        L.append(f"- **{r['severity']}** `{r['check']}` on `{r['case_id']}` #{r['repeat']}: "
+        L.append(f"- **{r['severity']} {r['status']}** `{r['check']}` on `{r['case_id']}` #{r['repeat']}: "
                  f"{r['detail']}  \n  trace: `{r['trace']}`")
     L += ["", "---", "Rule checks: `evals/checks.py`. Judge rubrics: `evals/judge.py`. "
           "Cases: `evals/cases.json`."]
@@ -224,10 +238,10 @@ def write_outputs(rows: list[dict], out: Path, meta: dict) -> int:
     md = report(rows, meta)
     (out / "report.md").write_text(md)
     print(f"\nReport: {out / 'report.md'}")
-    crit = [r for row in rows for r in row["results"] if r["severity"] == "critical" and r["status"] == FAIL]
-    for r in crit[:10]:
-        print(f"  CRITICAL {r['check']}: {r['detail'][:120]}")
-    return len(crit)
+    critical_issues = [r for row in rows for r in row["results"] if _blocks_gate(r)]
+    for r in critical_issues[:10]:
+        print(f"  CRITICAL {r['status']} {r['check']}: {r['detail'][:120]}")
+    return len(critical_issues)
 
 
 # =============================================================================================
@@ -252,18 +266,23 @@ def main(argv=None) -> int:
         else:
             sp.add_argument("paths", nargs="+", help="trace files or folders containing traces/")
     a = ap.parse_args(argv)
+    if a.judge and a.judge_samples < 1:
+        ap.error("--judge-samples must be at least 1")
 
     when = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out = Path(a.out) if a.out else HERE / "results" / when
     meta = {"when": when, "judge": a.judge, "judge_samples": a.judge_samples}
 
     if a.cmd == "run":
+        if a.repeat < 1:
+            ap.error("--repeat must be at least 1")
         wanted = set(a.cases.split(",")) if a.cases else None
         cases = [c for c in CASES if not wanted or c["id"] in wanted]
         if wanted and (wanted - {c["id"] for c in CASES}):
             ap.error("unknown case(s): " + ", ".join(sorted(wanted - {c['id'] for c in CASES})))
         if any(c.get("expect_baseline_picks") for c in cases) and not any(c["id"] == "baseline" for c in cases):
             cases = [next(c for c in CASES if c["id"] == "baseline")] + cases
+        _load_agent_env()
         print(f"Recording {len(cases)} case(s) × {a.repeat} into {out}")
         traces = asyncio.run(record(cases, a.repeat, out, a.parallel, a.timeout))
         meta |= {"cases": [c["id"] for c in cases], "repeat": a.repeat}
@@ -272,10 +291,14 @@ def main(argv=None) -> int:
         for p in map(Path, a.paths):
             files += sorted((p / "traces").glob("*.json")) if (p / "traces").is_dir() else \
                      sorted(p.glob("*.json")) if p.is_dir() else [p]
+        if not files:
+            ap.error("no trace files found in the supplied paths")
         traces = [Trace.load(f) for f in files]
         if not a.out and len(a.paths) == 1 and Path(a.paths[0]).is_dir():
             out = Path(a.paths[0])
         print(f"Scoring {len(traces)} trace(s)")
+        if a.judge:
+            _load_agent_env()
 
     rows = score(traces, a.judge, a.judge_samples)
     n_crit = write_outputs(rows, out, meta)

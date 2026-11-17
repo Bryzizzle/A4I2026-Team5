@@ -20,7 +20,7 @@ Open **Web Preview → port 8080**, pick `clinic_planner`, and ask: *"Plan next 
   ```
   This prints each agent's turn, then `plan_round`, `rejection_log`, `picked_tract_ids` and `plan_approved` from session state.
 - **Offline tests** (no cloud needed): `cd agent && python -m unittest test_offline`.
-- **Evals** (9 prompts incl. adversarial ones, 38 rule checks + LLM judge): `cd agent && python -m evals run`. See [`evals/README.md`](evals/README.md).
+- **Evals** (9 prompts incl. adversarial ones, 39 rule checks + LLM judge): `cd agent && python -m evals run`. See [`evals/README.md`](evals/README.md).
 
 ## The architecture
 
