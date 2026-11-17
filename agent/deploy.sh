@@ -29,11 +29,11 @@ echo "== Agent service account"
 gcloud iam service-accounts describe "${AG_SA}" --project "${PROJECT}" >/dev/null 2>&1 \
   || gcloud iam service-accounts create clinic-agent --project "${PROJECT}"
 for role in roles/bigquery.dataViewer roles/bigquery.jobUser roles/aiplatform.user; do
-  gcloud projects add-iam-policy-binding "${PROJECT}" --member "serviceAccount:${AG_SA}" \
-    --role "${role}" --condition=None --quiet >/dev/null
+  retry_bind gcloud projects add-iam-policy-binding "${PROJECT}" \
+    --member "serviceAccount:${AG_SA}" --role "${role}" --condition=None --quiet
 done
-gcloud run services add-iam-policy-binding toolbox --member "serviceAccount:${AG_SA}" \
-  --role roles/run.invoker --region "${REGION}" --project "${PROJECT}" >/dev/null
+retry_bind gcloud run services add-iam-policy-binding toolbox --member "serviceAccount:${AG_SA}" \
+  --role roles/run.invoker --region "${REGION}" --project "${PROJECT}"
 
 echo "== Deploy clinic-planner (adk web UI)"
 # shellcheck disable=SC1091

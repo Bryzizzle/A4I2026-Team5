@@ -73,11 +73,11 @@ echo "${RESOURCE}" > "${ID_FILE}"
 
 echo "== Permissions for the Agent Runtime identity (${RE_SA})"
 for role in roles/bigquery.dataViewer roles/bigquery.jobUser roles/aiplatform.user; do
-  gcloud projects add-iam-policy-binding "${PROJECT}" --member "serviceAccount:${RE_SA}" \
-    --role "${role}" --condition=None --quiet >/dev/null
+  retry_bind gcloud projects add-iam-policy-binding "${PROJECT}" \
+    --member "serviceAccount:${RE_SA}" --role "${role}" --condition=None --quiet
 done
-gcloud run services add-iam-policy-binding toolbox --member "serviceAccount:${RE_SA}" \
-  --role roles/run.invoker --region "${REGION}" --project "${PROJECT}" >/dev/null
+retry_bind gcloud run services add-iam-policy-binding toolbox --member "serviceAccount:${RE_SA}" \
+  --role roles/run.invoker --region "${REGION}" --project "${PROJECT}"
 
 echo
 echo "Done. Agent Runtime resource: ${RESOURCE}"

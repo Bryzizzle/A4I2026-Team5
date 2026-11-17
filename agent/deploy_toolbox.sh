@@ -16,6 +16,18 @@ TOOLBOX_VERSION="${TOOLBOX_VERSION:-1.17.0}"
 AGENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TB_SA="toolbox-identity@${PROJECT}.iam.gserviceaccount.com"
 
+# New service accounts take up to a minute to become visible to IAM ("does not exist").
+# Retry a binding command until it succeeds or ~2 minutes pass.
+retry_bind() {
+  local i
+  for i in $(seq 1 12); do
+    if "$@" >/dev/null 2>&1; then return 0; fi
+    echo "   waiting for IAM to see the new service account (attempt ${i}/12)..."
+    sleep 10
+  done
+  "$@" >/dev/null   # final attempt, with its error shown
+}
+
 if [ -z "${PROJECT}" ] || [ "${PROJECT}" = "(unset)" ]; then
   echo "No project. Run: gcloud config set project YOUR_PROJECT_ID" >&2; exit 1
 fi
@@ -30,8 +42,8 @@ echo "== Toolbox service account"
 gcloud iam service-accounts describe "${TB_SA}" --project "${PROJECT}" >/dev/null 2>&1 \
   || gcloud iam service-accounts create toolbox-identity --project "${PROJECT}"
 for role in roles/bigquery.dataViewer roles/bigquery.jobUser; do
-  gcloud projects add-iam-policy-binding "${PROJECT}" --member "serviceAccount:${TB_SA}" \
-    --role "${role}" --condition=None --quiet >/dev/null
+  retry_bind gcloud projects add-iam-policy-binding "${PROJECT}" \
+    --member "serviceAccount:${TB_SA}" --role "${role}" --condition=None --quiet
 done
 
 echo "== Toolbox config -> Secret Manager"
@@ -42,8 +54,8 @@ if gcloud secrets describe tools --project "${PROJECT}" >/dev/null 2>&1; then
 else
   gcloud secrets create tools --data-file="${AGENT_DIR}/toolbox/tools.yaml" --project "${PROJECT}"
 fi
-gcloud secrets add-iam-policy-binding tools --member "serviceAccount:${TB_SA}" \
-  --role roles/secretmanager.secretAccessor --project "${PROJECT}" >/dev/null
+retry_bind gcloud secrets add-iam-policy-binding tools --member "serviceAccount:${TB_SA}" \
+  --role roles/secretmanager.secretAccessor --project "${PROJECT}"
 
 echo "== Deploy toolbox (private)"
 gcloud run deploy toolbox \
