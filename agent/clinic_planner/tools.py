@@ -37,7 +37,8 @@ def _fetch_candidates() -> list[dict[str, Any]]:
     """Top tracts by need_score from v_van_need (planner-safe view: no demographics)."""
     from google.cloud import bigquery  # imported lazily so offline tests need no credentials
 
-    project = os.environ["GOOGLE_CLOUD_PROJECT"]
+    # A4I_PROJECT first: on Agent Runtime the platform sets GOOGLE_CLOUD_PROJECT itself.
+    project = os.environ.get("A4I_PROJECT") or os.environ["GOOGLE_CLOUD_PROJECT"]
     dataset = os.environ.get("A4I_DATASET", "a4i_health")
     sql = (f"SELECT {_COLUMNS} FROM `{project}.{dataset}.v_van_need` "
            f"WHERE need_score IS NOT NULL ORDER BY need_score DESC LIMIT {CANDIDATES}")

@@ -11,6 +11,12 @@ bash agent/run_local.sh     # starts MCP Toolbox on :5000, then adk web on :8080
 Open **Web Preview → port 8080**, pick `clinic_planner`, and ask: *"Plan next month's four Saturdays."*
 
 - **Deploy to Cloud Run:** `bash agent/deploy.sh`. It deploys two services: a private Toolbox, and the agent with its UI.
+- **Deploy to Agent Runtime:** `bash agent/deploy_agent_runtime.sh`. The agent goes to Agent Runtime and the Toolbox goes to Cloud Run (private). The deploy takes 5–10 minutes. Then query it:
+  ```bash
+  source ~/.venvs/a4i/bin/activate
+  python3 agent/query_agent_runtime.py "Plan next month's four Saturdays."
+  ```
+  This prints each agent's turn, then `plan_round`, `rejection_log`, `picked_tract_ids` and `plan_approved` from session state.
 - **Offline tests** (no cloud needed): `cd agent && python -m unittest test_offline`.
 
 ## The architecture
