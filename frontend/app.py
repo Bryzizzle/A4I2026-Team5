@@ -119,7 +119,8 @@ def sse(event: str, data: dict[str, Any]) -> str:
 
 # ---------------------------------------------------------------- Agent Runtime access
 
-_remote = None
+_client = None   # must stay referenced: when the vertexai Client is garbage-collected it closes
+_remote = None   # the aiohttp session the agent handle uses ("assert self._connector is not None")
 
 
 def agent_runtime_id() -> str:
@@ -136,14 +137,21 @@ def agent_runtime_id() -> str:
 
 def get_remote():
     """The deployed agent. Tests replace this with a fake."""
-    global _remote
+    global _client, _remote
     if _remote is None:
         import vertexai
         name = agent_runtime_id()
         parts = name.split("/")            # projects/P/locations/L/reasoningEngines/ID
-        client = vertexai.Client(project=parts[1], location=parts[3])
-        _remote = client.agent_engines.get(name=name)
+        _client = vertexai.Client(project=parts[1], location=parts[3])
+        _remote = _client.agent_engines.get(name=name)
     return _remote
+
+
+def reset_remote() -> None:
+    """Drop the cached client after a failure so the next run starts with a fresh session."""
+    global _client, _remote
+    _client = None
+    _remote = None
 
 
 async def live_events(message: str) -> AsyncIterator[tuple[str, dict[str, Any]]]:
@@ -230,6 +238,7 @@ async def run(req: RunRequest) -> StreamingResponse:
                     json.dump(recording, f, default=str)
             except Exception as e:  # surface to the UI instead of a dropped connection
                 traceback.print_exc()
+                reset_remote()
                 where = traceback.extract_tb(e.__traceback__)[-1]
                 yield sse("error", {"message": f"{type(e).__name__}: {e}",
                                     "where": f"{where.filename}:{where.lineno} in {where.name}"})
