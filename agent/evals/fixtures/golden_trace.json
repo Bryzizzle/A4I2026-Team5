@@ -1,0 +1,1901 @@
+{
+ "case_id": "baseline",
+ "prompt": "Plan next month's four Saturdays.",
+ "repeat": 0,
+ "seconds": 12.8,
+ "error": null,
+ "_note": "SYNTHETIC fixture for testing the checks; see build_golden.py",
+ "events": [
+  {
+   "author": "need_scout",
+   "timestamp": 1800000000.1,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "top_need_tracts",
+       "args": {
+        "limit": 15
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "coverage_scout",
+   "timestamp": 1800000000.2,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "county_coverage",
+       "args": {}
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "respiratory_scout",
+   "timestamp": 1800000000.3,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "regional_respiratory_trend",
+       "args": {
+        "weeks": 8
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "coverage_scout",
+   "timestamp": 1800000000.8,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "county_coverage",
+       "response": {
+        "result": "[{\"county_fips\": \"13121\", \"tracts_total\": 326, \"population_total\": 1066710, \"tracts_scored\": 325, \"tracts_not_scored\": 1, \"safety_net_sites\": 55, \"people_over_5km_from_safety_net\": 443800, \"worst_km_to_safety_net\": 28.6, \"shortage_areas_designated\": 0, \"disease_hsa_counties\": \"Clayton, DeKalb, Fulton, Gwinnett\", \"pm25_p90_over_p10\": 1.049}]"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "respiratory_scout",
+   "timestamp": 1800000001.3,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "regional_respiratory_trend",
+       "response": {
+        "result": "[{\"week_end\": \"2026-11-07\", \"percent_visits_covid\": 1.0, \"percent_visits_influenza\": 1.0, \"percent_visits_rsv\": 1.0, \"hsa\": \"placeholder HSA\", \"hsa_counties\": \"Clayton, DeKalb, Fulton, Gwinnett\"}, {\"week_end\": \"2026-10-31\", \"percent_visits_covid\": 1.0, \"percent_visits_influenza\": 1.0, \"percent_visits_rsv\": 1.0, \"hsa\": \"placeholder HSA\", \"hsa_counties\": \"Clayton, DeKalb, Fulton, Gwinnett\"}]"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "need_scout",
+   "timestamp": 1800000001.8,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "top_need_tracts",
+       "response": {
+        "result": "[{\"geo_id\": \"13121011430\", \"need_score\": 78.2, \"need_rank\": 0, \"latitude\": 33.6, \"longitude\": -84.5, \"km_to_safety_net\": 13.5, \"total_pop\": 4338, \"pct_uninsured\": 25, \"pct_no_vehicle\": 7, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"uninsured, far from care\"}, {\"geo_id\": \"13121011421\", \"need_score\": 78.1, \"need_rank\": 0, \"latitude\": 33.614, \"longitude\": -84.5, \"km_to_safety_net\": 14.6, \"total_pop\": 3933, \"pct_uninsured\": null, \"pct_no_vehicle\": null, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"uninsured, far from care\"}, {\"geo_id\": \"13121006801\", \"need_score\": 77.2, \"need_rank\": 0, \"latitude\": 33.75, \"longitude\": -84.42, \"km_to_safety_net\": 1.4, \"total_pop\": 2297, \"pct_uninsured\": 35, \"pct_no_vehicle\": null, \"pct_limited_english\": null, \"components_missing\": 1, \"reason\": \"highest uninsured\"}, {\"geo_id\": \"13121011431\", \"need_score\": 77.0, \"need_rank\": 0, \"latitude\": 33.6045, \"longitude\": -84.5, \"km_to_safety_net\": 13.9, \"total_pop\": 1970, \"pct_uninsured\": null, \"pct_no_vehicle\": null, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"uninsured, far from care\"}, {\"geo_id\": \"13121007604\", \"need_score\": 76.9, \"need_rank\": 0, \"latitude\": 33.7, \"longitude\": -84.3, \"km_to_safety_net\": 4.4, \"total_pop\": 3191, \"pct_uninsured\": 20, \"pct_no_vehicle\": 33, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"mobility, chronic disease\"}, {\"geo_id\": \"13121006802\", \"need_score\": 76.2, \"need_rank\": 0, \"latitude\": 33.758, \"longitude\": -84.42, \"km_to_safety_net\": 1.26, \"total_pop\": 1384, \"pct_uninsured\": null, \"pct_no_vehicle\": 67.6, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"no vehicle\"}, {\"geo_id\": \"13121006602\", \"need_score\": 76.15, \"need_rank\": 0, \"latitude\": 33.85, \"longitude\": -84.35, \"km_to_safety_net\": 2.2, \"total_pop\": 1050, \"pct_uninsured\": 22, \"pct_no_vehicle\": 46.1, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"no vehicle\"}, {\"geo_id\": \"13121008701\", \"need_score\": 74.4, \"need_rank\": 0, \"latitude\": 33.95, \"longitude\": -84.25, \"km_to_safety_net\": 4.4, \"total_pop\": 3333, \"pct_uninsured\": null, \"pct_no_vehicle\": null, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"uninsured\"}, {\"geo_id\": \"13121007808\", \"need_score\": 74.3, \"need_rank\": 0, \"latitude\": 34.05, \"longitude\": -84.2, \"km_to_safety_net\": 1.6, \"total_pop\": 3749, \"pct_uninsured\": null, \"pct_no_vehicle\": 55.8, \"pct_limited_english\": null, \"components_missing\": 0, \"reason\": \"no vehicle\"}]"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "respiratory_scout",
+   "timestamp": 1800000002.3,
+   "actions": {
+    "stateDelta": {
+     "evidence_respiratory": "Across the last weeks the shares are flat. The Health Service Area covers Clayton, DeKalb, Fulton and Gwinnett.\nThis is a multi-county regional figure; it says nothing about any neighborhood or tract and must not be used to choose between tracts."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "Across the last weeks the shares are flat. The Health Service Area covers Clayton, DeKalb, Fulton and Gwinnett.\nThis is a multi-county regional figure; it says nothing about any neighborhood or tract and must not be used to choose between tracts."
+     }
+    ]
+   }
+  },
+  {
+   "author": "coverage_scout",
+   "timestamp": 1800000002.8,
+   "actions": {
+    "stateDelta": {
+     "evidence_coverage": "- 325 of 326 tracts scored; 1 not scored.\n- 55 safety-net sites; 443,800 people live more than 5 km from one; worst 28.6 km *(straight-line upper bound)*.\n- **0 live shortage areas.** No federal signal is not the same as no problem.\n- Respiratory data is one Health Service Area figure for Clayton, DeKalb, Fulton and Gwinnett.\n- PM2.5 p90/p10 = 1.049: air cannot separate neighborhoods."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "- 325 of 326 tracts scored; 1 not scored.\n- 55 safety-net sites; 443,800 people live more than 5 km from one; worst 28.6 km *(straight-line upper bound)*.\n- **0 live shortage areas.** No federal signal is not the same as no problem.\n- Respiratory data is one Health Service Area figure for Clayton, DeKalb, Fulton and Gwinnett.\n- PM2.5 p90/p10 = 1.049: air cannot separate neighborhoods."
+     }
+    ]
+   }
+  },
+  {
+   "author": "need_scout",
+   "timestamp": 1800000003.3,
+   "actions": {
+    "stateDelta": {
+     "evidence_need": "- **011430** (78.2): uninsured adults, nearest safety-net site 13.5 km *(modeled; straight-line upper bound)*.\n- **011421** (78.1) and **011431** (77.0) sit next to 011430.\n- **006801** (77.2): 35% uninsured *(modeled)*; scored with 1 input missing.\n- **006802** (76.2): 68% of households have no car *(survey)*."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "- **011430** (78.2): uninsured adults, nearest safety-net site 13.5 km *(modeled; straight-line upper bound)*.\n- **011421** (78.1) and **011431** (77.0) sit next to 011430.\n- **006801** (77.2): 35% uninsured *(modeled)*; scored with 1 input missing.\n- **006802** (76.2): 68% of households have no car *(survey)*."
+     }
+    ]
+   }
+  },
+  {
+   "author": "planner",
+   "timestamp": 1800000003.8,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "plan_saturdays",
+       "args": {}
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "planner",
+   "timestamp": 1800000004.3,
+   "actions": {
+    "stateDelta": {
+     "plan_history": [
+      {
+       "round": 1,
+       "picked": [
+        {
+         "geo_id": "13121011430",
+         "need_score": 78.2,
+         "need_rank": 0,
+         "total_pop": 4338,
+         "pct_uninsured": 25,
+         "pct_no_vehicle": 7,
+         "pct_limited_english": null,
+         "km_to_safety_net": 13.5,
+         "components_missing": 0,
+         "reason": "uninsured, far from care",
+         "saturday": 1,
+         "latitude": 33.6,
+         "longitude": -84.5
+        },
+        {
+         "geo_id": "13121006801",
+         "need_score": 77.2,
+         "need_rank": 0,
+         "total_pop": 2297,
+         "pct_uninsured": 35,
+         "pct_no_vehicle": null,
+         "pct_limited_english": null,
+         "km_to_safety_net": 1.4,
+         "components_missing": 1,
+         "reason": "highest uninsured",
+         "saturday": 2,
+         "latitude": 33.75,
+         "longitude": -84.42
+        },
+        {
+         "geo_id": "13121007604",
+         "need_score": 76.9,
+         "need_rank": 0,
+         "total_pop": 3191,
+         "pct_uninsured": 20,
+         "pct_no_vehicle": 33,
+         "pct_limited_english": null,
+         "km_to_safety_net": 4.4,
+         "components_missing": 0,
+         "reason": "mobility, chronic disease",
+         "saturday": 3,
+         "latitude": 33.7,
+         "longitude": -84.3
+        },
+        {
+         "geo_id": "13121006602",
+         "need_score": 76.15,
+         "need_rank": 0,
+         "total_pop": 1050,
+         "pct_uninsured": 22,
+         "pct_no_vehicle": 46.1,
+         "pct_limited_english": null,
+         "km_to_safety_net": 2.2,
+         "components_missing": 0,
+         "reason": "no vehicle",
+         "saturday": 4,
+         "latitude": 33.85,
+         "longitude": -84.35
+        }
+       ],
+       "passed_over": [
+        {
+         "geo_id": "13121011421",
+         "need_score": 78.1,
+         "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+         "conflicts_with": "13121011430"
+        },
+        {
+         "geo_id": "13121011431",
+         "need_score": 77.0,
+         "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+         "conflicts_with": "13121011430"
+        },
+        {
+         "geo_id": "13121006802",
+         "need_score": 76.2,
+         "reason": "0.9 km from Saturday 2 (tract 13121006801); likely the same people",
+         "conflicts_with": "13121006801"
+        }
+       ],
+       "excluded": []
+      }
+     ],
+     "plan_round": 1,
+     "picked_tract_ids": "13121011430,13121006801,13121007604,13121006602",
+     "plan_data": {
+      "round": 1,
+      "picked": [
+       {
+        "geo_id": "13121011430",
+        "need_score": 78.2,
+        "need_rank": 0,
+        "latitude": 33.6,
+        "longitude": -84.5,
+        "km_to_safety_net": 13.5,
+        "total_pop": 4338,
+        "pct_uninsured": 25,
+        "pct_no_vehicle": 7,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care",
+        "saturday": 1
+       },
+       {
+        "geo_id": "13121006801",
+        "need_score": 77.2,
+        "need_rank": 0,
+        "latitude": 33.75,
+        "longitude": -84.42,
+        "km_to_safety_net": 1.4,
+        "total_pop": 2297,
+        "pct_uninsured": 35,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 1,
+        "reason": "highest uninsured",
+        "saturday": 2
+       },
+       {
+        "geo_id": "13121007604",
+        "need_score": 76.9,
+        "need_rank": 0,
+        "latitude": 33.7,
+        "longitude": -84.3,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3191,
+        "pct_uninsured": 20,
+        "pct_no_vehicle": 33,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "mobility, chronic disease",
+        "saturday": 3
+       },
+       {
+        "geo_id": "13121006602",
+        "need_score": 76.15,
+        "need_rank": 0,
+        "latitude": 33.85,
+        "longitude": -84.35,
+        "km_to_safety_net": 2.2,
+        "total_pop": 1050,
+        "pct_uninsured": 22,
+        "pct_no_vehicle": 46.1,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle",
+        "saturday": 4
+       }
+      ],
+      "skipped": [
+       {
+        "geo_id": "13121011421",
+        "need_score": 78.1,
+        "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+        "conflicts_with": "13121011430"
+       },
+       {
+        "geo_id": "13121011431",
+        "need_score": 77.0,
+        "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+        "conflicts_with": "13121011430"
+       },
+       {
+        "geo_id": "13121006802",
+        "need_score": 76.2,
+        "reason": "0.9 km from Saturday 2 (tract 13121006801); likely the same people",
+        "conflicts_with": "13121006801"
+       }
+      ],
+      "near_ties": [
+       {
+        "geo_id": "13121008701",
+        "need_score": 74.4,
+        "need_rank": 0,
+        "latitude": 33.95,
+        "longitude": -84.25,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3333,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured"
+       },
+       {
+        "geo_id": "13121007808",
+        "need_score": 74.3,
+        "need_rank": 0,
+        "latitude": 34.05,
+        "longitude": -84.2,
+        "km_to_safety_net": 1.6,
+        "total_pop": 3749,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 55.8,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       }
+      ],
+      "candidates": [
+       {
+        "geo_id": "13121011430",
+        "need_score": 78.2,
+        "need_rank": 0,
+        "latitude": 33.6,
+        "longitude": -84.5,
+        "km_to_safety_net": 13.5,
+        "total_pop": 4338,
+        "pct_uninsured": 25,
+        "pct_no_vehicle": 7,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care"
+       },
+       {
+        "geo_id": "13121011421",
+        "need_score": 78.1,
+        "need_rank": 0,
+        "latitude": 33.614,
+        "longitude": -84.5,
+        "km_to_safety_net": 14.6,
+        "total_pop": 3933,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care"
+       },
+       {
+        "geo_id": "13121006801",
+        "need_score": 77.2,
+        "need_rank": 0,
+        "latitude": 33.75,
+        "longitude": -84.42,
+        "km_to_safety_net": 1.4,
+        "total_pop": 2297,
+        "pct_uninsured": 35,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 1,
+        "reason": "highest uninsured"
+       },
+       {
+        "geo_id": "13121011431",
+        "need_score": 77.0,
+        "need_rank": 0,
+        "latitude": 33.6045,
+        "longitude": -84.5,
+        "km_to_safety_net": 13.9,
+        "total_pop": 1970,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care"
+       },
+       {
+        "geo_id": "13121007604",
+        "need_score": 76.9,
+        "need_rank": 0,
+        "latitude": 33.7,
+        "longitude": -84.3,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3191,
+        "pct_uninsured": 20,
+        "pct_no_vehicle": 33,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "mobility, chronic disease"
+       },
+       {
+        "geo_id": "13121006802",
+        "need_score": 76.2,
+        "need_rank": 0,
+        "latitude": 33.758,
+        "longitude": -84.42,
+        "km_to_safety_net": 1.26,
+        "total_pop": 1384,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 67.6,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       },
+       {
+        "geo_id": "13121006602",
+        "need_score": 76.15,
+        "need_rank": 0,
+        "latitude": 33.85,
+        "longitude": -84.35,
+        "km_to_safety_net": 2.2,
+        "total_pop": 1050,
+        "pct_uninsured": 22,
+        "pct_no_vehicle": 46.1,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       },
+       {
+        "geo_id": "13121008701",
+        "need_score": 74.4,
+        "need_rank": 0,
+        "latitude": 33.95,
+        "longitude": -84.25,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3333,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured"
+       },
+       {
+        "geo_id": "13121007808",
+        "need_score": 74.3,
+        "need_rank": 0,
+        "latitude": 34.05,
+        "longitude": -84.2,
+        "km_to_safety_net": 1.6,
+        "total_pop": 3749,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 55.8,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       }
+      ],
+      "excluded": []
+     }
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "plan_saturdays",
+       "response": {
+        "round": 1,
+        "picked": [
+         {
+          "geo_id": "13121011430",
+          "need_score": 78.2,
+          "need_rank": 0,
+          "total_pop": 4338,
+          "pct_uninsured": 25,
+          "pct_no_vehicle": 7,
+          "pct_limited_english": null,
+          "km_to_safety_net": 13.5,
+          "components_missing": 0,
+          "reason": "uninsured, far from care",
+          "saturday": 1
+         },
+         {
+          "geo_id": "13121006801",
+          "need_score": 77.2,
+          "need_rank": 0,
+          "total_pop": 2297,
+          "pct_uninsured": 35,
+          "pct_no_vehicle": null,
+          "pct_limited_english": null,
+          "km_to_safety_net": 1.4,
+          "components_missing": 1,
+          "reason": "highest uninsured",
+          "saturday": 2
+         },
+         {
+          "geo_id": "13121007604",
+          "need_score": 76.9,
+          "need_rank": 0,
+          "total_pop": 3191,
+          "pct_uninsured": 20,
+          "pct_no_vehicle": 33,
+          "pct_limited_english": null,
+          "km_to_safety_net": 4.4,
+          "components_missing": 0,
+          "reason": "mobility, chronic disease",
+          "saturday": 3
+         },
+         {
+          "geo_id": "13121006602",
+          "need_score": 76.15,
+          "need_rank": 0,
+          "total_pop": 1050,
+          "pct_uninsured": 22,
+          "pct_no_vehicle": 46.1,
+          "pct_limited_english": null,
+          "km_to_safety_net": 2.2,
+          "components_missing": 0,
+          "reason": "no vehicle",
+          "saturday": 4
+         }
+        ],
+        "passed_over": [
+         {
+          "geo_id": "13121011421",
+          "need_score": 78.1,
+          "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+          "conflicts_with": "13121011430"
+         },
+         {
+          "geo_id": "13121011431",
+          "need_score": 77.0,
+          "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+          "conflicts_with": "13121011430"
+         },
+         {
+          "geo_id": "13121006802",
+          "need_score": 76.2,
+          "reason": "0.9 km from Saturday 2 (tract 13121006801); likely the same people",
+          "conflicts_with": "13121006801"
+         }
+        ],
+        "near_ties_with_last_pick": [
+         {
+          "geo_id": "13121008701",
+          "need_score": 74.4,
+          "need_rank": 0,
+          "total_pop": 3333,
+          "pct_uninsured": null,
+          "pct_no_vehicle": null,
+          "pct_limited_english": null,
+          "km_to_safety_net": 4.4,
+          "components_missing": 0,
+          "reason": "uninsured",
+          "saturday": null
+         },
+         {
+          "geo_id": "13121007808",
+          "need_score": 74.3,
+          "need_rank": 0,
+          "total_pop": 3749,
+          "pct_uninsured": null,
+          "pct_no_vehicle": 55.8,
+          "pct_limited_english": null,
+          "km_to_safety_net": 1.6,
+          "components_missing": 0,
+          "reason": "no vehicle",
+          "saturday": null
+         }
+        ],
+        "excluded_by_reviewer": [],
+        "short_of_four": 0,
+        "rules": {
+         "n": 4,
+         "min_spacing_km": 3.0,
+         "skip_if_safety_net_within_km": 1.0,
+         "tie_margin_points": 2.0
+        },
+        "scale_note": "Tract level. Uninsured and disease values are MODELED (CDC PLACES). No-vehicle is a survey estimate (SVI). Distances are straight lines to federally recognized sites inside the county: an upper bound."
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "planner",
+   "timestamp": 1800000004.8,
+   "actions": {
+    "stateDelta": {
+     "plan": "**Round 1** *(tract level; uninsured modeled, no-vehicle survey, distances straight-line upper bounds)*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km *(straight-line)* |\n| 2 | 006801 | 77.2 | 2,297 | 35% uninsured *(modeled)*; no vehicle data |\n| 3 | 007604 | 76.9 | 3,191 | 33% no vehicle *(survey)* |\n| 4 | 006602 | 76.2 | 1,050 | 46% no vehicle *(survey)* |\n\nPassed over: 011421, 011431, 006802. Near-ties with Saturday 4: 008701 and 007808."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "**Round 1** *(tract level; uninsured modeled, no-vehicle survey, distances straight-line upper bounds)*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km *(straight-line)* |\n| 2 | 006801 | 77.2 | 2,297 | 35% uninsured *(modeled)*; no vehicle data |\n| 3 | 007604 | 76.9 | 3,191 | 33% no vehicle *(survey)* |\n| 4 | 006602 | 76.2 | 1,050 | 46% no vehicle *(survey)* |\n\nPassed over: 011421, 011431, 006802. Near-ties with Saturday 4: 008701 and 007808."
+     }
+    ]
+   }
+  },
+  {
+   "author": "reviewer",
+   "timestamp": 1800000005.3,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "check_plan_rules",
+       "args": {}
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "reviewer",
+   "timestamp": 1800000005.8,
+   "actions": {
+    "stateDelta": {
+     "excluded_geo_ids": [
+      "13121006801",
+      "13121006602"
+     ],
+     "rejection_log": [
+      {
+       "round": 1,
+       "rule": "incomplete_data_displaced_complete_neighbour",
+       "reject": "13121006801",
+       "prefer": "13121006802",
+       "detail": "Saturday 2 (tract 13121006801, score 77.2) was scored with 1 input(s) missing. Tract 13121006802 is 0.9 km away, has complete data and scores 76.2: within 2 points, which is a tie for modeled estimates. Prefer the tract we can fully defend."
+      },
+      {
+       "round": 1,
+       "rule": "tie_broken_by_population_reached",
+       "reject": "13121006602",
+       "prefer": "13121008701",
+       "detail": "Saturday 4 (tract 13121006602, 1,050 people, score 76.2) is tied with tract 13121008701 (3,333 people, score 74.4). One van-day reaches more people there."
+      }
+     ],
+     "review_findings": [
+      {
+       "rule": "incomplete_data_displaced_complete_neighbour",
+       "reject": "13121006801",
+       "prefer": "13121006802",
+       "detail": "Saturday 2 (tract 13121006801, score 77.2) was scored with 1 input(s) missing. Tract 13121006802 is 0.9 km away, has complete data and scores 76.2: within 2 points, which is a tie for modeled estimates. Prefer the tract we can fully defend."
+      },
+      {
+       "rule": "tie_broken_by_population_reached",
+       "reject": "13121006602",
+       "prefer": "13121008701",
+       "detail": "Saturday 4 (tract 13121006602, 1,050 people, score 76.2) is tied with tract 13121008701 (3,333 people, score 74.4). One van-day reaches more people there."
+      }
+     ]
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "check_plan_rules",
+       "response": {
+        "round": 1,
+        "approved": false,
+        "findings": [
+         {
+          "rule": "incomplete_data_displaced_complete_neighbour",
+          "reject": "13121006801",
+          "prefer": "13121006802",
+          "detail": "Saturday 2 (tract 13121006801, score 77.2) was scored with 1 input(s) missing. Tract 13121006802 is 0.9 km away, has complete data and scores 76.2: within 2 points, which is a tie for modeled estimates. Prefer the tract we can fully defend."
+         },
+         {
+          "rule": "tie_broken_by_population_reached",
+          "reject": "13121006602",
+          "prefer": "13121008701",
+          "detail": "Saturday 4 (tract 13121006602, 1,050 people, score 76.2) is tied with tract 13121008701 (3,333 people, score 74.4). One van-day reaches more people there."
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "reviewer",
+   "timestamp": 1800000006.3,
+   "actions": {
+    "stateDelta": {
+     "review": "**REJECTED**\n- 006801 \u2192 006802: scored with a missing input; tied with a complete-data neighbour 0.9 km away.\n- 006602 \u2192 008701: tied with a tract three times its size."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "**REJECTED**\n- 006801 \u2192 006802: scored with a missing input; tied with a complete-data neighbour 0.9 km away.\n- 006602 \u2192 008701: tied with a tract three times its size."
+     }
+    ]
+   }
+  },
+  {
+   "author": "planner",
+   "timestamp": 1800000006.8,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "plan_saturdays",
+       "args": {}
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "planner",
+   "timestamp": 1800000007.3,
+   "actions": {
+    "stateDelta": {
+     "plan_history": [
+      {
+       "round": 1,
+       "picked": [
+        {
+         "geo_id": "13121011430",
+         "need_score": 78.2,
+         "need_rank": 0,
+         "total_pop": 4338,
+         "pct_uninsured": 25,
+         "pct_no_vehicle": 7,
+         "pct_limited_english": null,
+         "km_to_safety_net": 13.5,
+         "components_missing": 0,
+         "reason": "uninsured, far from care",
+         "saturday": 1,
+         "latitude": 33.6,
+         "longitude": -84.5
+        },
+        {
+         "geo_id": "13121006801",
+         "need_score": 77.2,
+         "need_rank": 0,
+         "total_pop": 2297,
+         "pct_uninsured": 35,
+         "pct_no_vehicle": null,
+         "pct_limited_english": null,
+         "km_to_safety_net": 1.4,
+         "components_missing": 1,
+         "reason": "highest uninsured",
+         "saturday": 2,
+         "latitude": 33.75,
+         "longitude": -84.42
+        },
+        {
+         "geo_id": "13121007604",
+         "need_score": 76.9,
+         "need_rank": 0,
+         "total_pop": 3191,
+         "pct_uninsured": 20,
+         "pct_no_vehicle": 33,
+         "pct_limited_english": null,
+         "km_to_safety_net": 4.4,
+         "components_missing": 0,
+         "reason": "mobility, chronic disease",
+         "saturday": 3,
+         "latitude": 33.7,
+         "longitude": -84.3
+        },
+        {
+         "geo_id": "13121006602",
+         "need_score": 76.15,
+         "need_rank": 0,
+         "total_pop": 1050,
+         "pct_uninsured": 22,
+         "pct_no_vehicle": 46.1,
+         "pct_limited_english": null,
+         "km_to_safety_net": 2.2,
+         "components_missing": 0,
+         "reason": "no vehicle",
+         "saturday": 4,
+         "latitude": 33.85,
+         "longitude": -84.35
+        }
+       ],
+       "passed_over": [
+        {
+         "geo_id": "13121011421",
+         "need_score": 78.1,
+         "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+         "conflicts_with": "13121011430"
+        },
+        {
+         "geo_id": "13121011431",
+         "need_score": 77.0,
+         "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+         "conflicts_with": "13121011430"
+        },
+        {
+         "geo_id": "13121006802",
+         "need_score": 76.2,
+         "reason": "0.9 km from Saturday 2 (tract 13121006801); likely the same people",
+         "conflicts_with": "13121006801"
+        }
+       ],
+       "excluded": []
+      },
+      {
+       "round": 2,
+       "picked": [
+        {
+         "geo_id": "13121011430",
+         "need_score": 78.2,
+         "need_rank": 0,
+         "total_pop": 4338,
+         "pct_uninsured": 25,
+         "pct_no_vehicle": 7,
+         "pct_limited_english": null,
+         "km_to_safety_net": 13.5,
+         "components_missing": 0,
+         "reason": "uninsured, far from care",
+         "saturday": 1,
+         "latitude": 33.6,
+         "longitude": -84.5
+        },
+        {
+         "geo_id": "13121007604",
+         "need_score": 76.9,
+         "need_rank": 0,
+         "total_pop": 3191,
+         "pct_uninsured": 20,
+         "pct_no_vehicle": 33,
+         "pct_limited_english": null,
+         "km_to_safety_net": 4.4,
+         "components_missing": 0,
+         "reason": "mobility, chronic disease",
+         "saturday": 2,
+         "latitude": 33.7,
+         "longitude": -84.3
+        },
+        {
+         "geo_id": "13121006802",
+         "need_score": 76.2,
+         "need_rank": 0,
+         "total_pop": 1384,
+         "pct_uninsured": null,
+         "pct_no_vehicle": 67.6,
+         "pct_limited_english": null,
+         "km_to_safety_net": 1.26,
+         "components_missing": 0,
+         "reason": "no vehicle",
+         "saturday": 3,
+         "latitude": 33.758,
+         "longitude": -84.42
+        },
+        {
+         "geo_id": "13121008701",
+         "need_score": 74.4,
+         "need_rank": 0,
+         "total_pop": 3333,
+         "pct_uninsured": null,
+         "pct_no_vehicle": null,
+         "pct_limited_english": null,
+         "km_to_safety_net": 4.4,
+         "components_missing": 0,
+         "reason": "uninsured",
+         "saturday": 4,
+         "latitude": 33.95,
+         "longitude": -84.25
+        }
+       ],
+       "passed_over": [
+        {
+         "geo_id": "13121011421",
+         "need_score": 78.1,
+         "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+         "conflicts_with": "13121011430"
+        },
+        {
+         "geo_id": "13121011431",
+         "need_score": 77.0,
+         "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+         "conflicts_with": "13121011430"
+        }
+       ],
+       "excluded": [
+        "13121006602",
+        "13121006801"
+       ]
+      }
+     ],
+     "plan_round": 2,
+     "picked_tract_ids": "13121011430,13121007604,13121006802,13121008701",
+     "plan_data": {
+      "round": 2,
+      "picked": [
+       {
+        "geo_id": "13121011430",
+        "need_score": 78.2,
+        "need_rank": 0,
+        "latitude": 33.6,
+        "longitude": -84.5,
+        "km_to_safety_net": 13.5,
+        "total_pop": 4338,
+        "pct_uninsured": 25,
+        "pct_no_vehicle": 7,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care",
+        "saturday": 1
+       },
+       {
+        "geo_id": "13121007604",
+        "need_score": 76.9,
+        "need_rank": 0,
+        "latitude": 33.7,
+        "longitude": -84.3,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3191,
+        "pct_uninsured": 20,
+        "pct_no_vehicle": 33,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "mobility, chronic disease",
+        "saturday": 2
+       },
+       {
+        "geo_id": "13121006802",
+        "need_score": 76.2,
+        "need_rank": 0,
+        "latitude": 33.758,
+        "longitude": -84.42,
+        "km_to_safety_net": 1.26,
+        "total_pop": 1384,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 67.6,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle",
+        "saturday": 3
+       },
+       {
+        "geo_id": "13121008701",
+        "need_score": 74.4,
+        "need_rank": 0,
+        "latitude": 33.95,
+        "longitude": -84.25,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3333,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured",
+        "saturday": 4
+       }
+      ],
+      "skipped": [
+       {
+        "geo_id": "13121011421",
+        "need_score": 78.1,
+        "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+        "conflicts_with": "13121011430"
+       },
+       {
+        "geo_id": "13121011431",
+        "need_score": 77.0,
+        "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+        "conflicts_with": "13121011430"
+       }
+      ],
+      "near_ties": [
+       {
+        "geo_id": "13121007808",
+        "need_score": 74.3,
+        "need_rank": 0,
+        "latitude": 34.05,
+        "longitude": -84.2,
+        "km_to_safety_net": 1.6,
+        "total_pop": 3749,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 55.8,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       }
+      ],
+      "candidates": [
+       {
+        "geo_id": "13121011430",
+        "need_score": 78.2,
+        "need_rank": 0,
+        "latitude": 33.6,
+        "longitude": -84.5,
+        "km_to_safety_net": 13.5,
+        "total_pop": 4338,
+        "pct_uninsured": 25,
+        "pct_no_vehicle": 7,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care"
+       },
+       {
+        "geo_id": "13121011421",
+        "need_score": 78.1,
+        "need_rank": 0,
+        "latitude": 33.614,
+        "longitude": -84.5,
+        "km_to_safety_net": 14.6,
+        "total_pop": 3933,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care"
+       },
+       {
+        "geo_id": "13121011431",
+        "need_score": 77.0,
+        "need_rank": 0,
+        "latitude": 33.6045,
+        "longitude": -84.5,
+        "km_to_safety_net": 13.9,
+        "total_pop": 1970,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured, far from care"
+       },
+       {
+        "geo_id": "13121007604",
+        "need_score": 76.9,
+        "need_rank": 0,
+        "latitude": 33.7,
+        "longitude": -84.3,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3191,
+        "pct_uninsured": 20,
+        "pct_no_vehicle": 33,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "mobility, chronic disease"
+       },
+       {
+        "geo_id": "13121006802",
+        "need_score": 76.2,
+        "need_rank": 0,
+        "latitude": 33.758,
+        "longitude": -84.42,
+        "km_to_safety_net": 1.26,
+        "total_pop": 1384,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 67.6,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       },
+       {
+        "geo_id": "13121008701",
+        "need_score": 74.4,
+        "need_rank": 0,
+        "latitude": 33.95,
+        "longitude": -84.25,
+        "km_to_safety_net": 4.4,
+        "total_pop": 3333,
+        "pct_uninsured": null,
+        "pct_no_vehicle": null,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "uninsured"
+       },
+       {
+        "geo_id": "13121007808",
+        "need_score": 74.3,
+        "need_rank": 0,
+        "latitude": 34.05,
+        "longitude": -84.2,
+        "km_to_safety_net": 1.6,
+        "total_pop": 3749,
+        "pct_uninsured": null,
+        "pct_no_vehicle": 55.8,
+        "pct_limited_english": null,
+        "components_missing": 0,
+        "reason": "no vehicle"
+       }
+      ],
+      "excluded": [
+       "13121006602",
+       "13121006801"
+      ]
+     }
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "plan_saturdays",
+       "response": {
+        "round": 2,
+        "picked": [
+         {
+          "geo_id": "13121011430",
+          "need_score": 78.2,
+          "need_rank": 0,
+          "total_pop": 4338,
+          "pct_uninsured": 25,
+          "pct_no_vehicle": 7,
+          "pct_limited_english": null,
+          "km_to_safety_net": 13.5,
+          "components_missing": 0,
+          "reason": "uninsured, far from care",
+          "saturday": 1
+         },
+         {
+          "geo_id": "13121007604",
+          "need_score": 76.9,
+          "need_rank": 0,
+          "total_pop": 3191,
+          "pct_uninsured": 20,
+          "pct_no_vehicle": 33,
+          "pct_limited_english": null,
+          "km_to_safety_net": 4.4,
+          "components_missing": 0,
+          "reason": "mobility, chronic disease",
+          "saturday": 2
+         },
+         {
+          "geo_id": "13121006802",
+          "need_score": 76.2,
+          "need_rank": 0,
+          "total_pop": 1384,
+          "pct_uninsured": null,
+          "pct_no_vehicle": 67.6,
+          "pct_limited_english": null,
+          "km_to_safety_net": 1.26,
+          "components_missing": 0,
+          "reason": "no vehicle",
+          "saturday": 3
+         },
+         {
+          "geo_id": "13121008701",
+          "need_score": 74.4,
+          "need_rank": 0,
+          "total_pop": 3333,
+          "pct_uninsured": null,
+          "pct_no_vehicle": null,
+          "pct_limited_english": null,
+          "km_to_safety_net": 4.4,
+          "components_missing": 0,
+          "reason": "uninsured",
+          "saturday": 4
+         }
+        ],
+        "passed_over": [
+         {
+          "geo_id": "13121011421",
+          "need_score": 78.1,
+          "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+          "conflicts_with": "13121011430"
+         },
+         {
+          "geo_id": "13121011431",
+          "need_score": 77.0,
+          "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+          "conflicts_with": "13121011430"
+         }
+        ],
+        "near_ties_with_last_pick": [
+         {
+          "geo_id": "13121007808",
+          "need_score": 74.3,
+          "need_rank": 0,
+          "total_pop": 3749,
+          "pct_uninsured": null,
+          "pct_no_vehicle": 55.8,
+          "pct_limited_english": null,
+          "km_to_safety_net": 1.6,
+          "components_missing": 0,
+          "reason": "no vehicle",
+          "saturday": null
+         }
+        ],
+        "excluded_by_reviewer": [
+         "13121006602",
+         "13121006801"
+        ],
+        "short_of_four": 0,
+        "rules": {
+         "n": 4,
+         "min_spacing_km": 3.0,
+         "skip_if_safety_net_within_km": 1.0,
+         "tie_margin_points": 2.0
+        },
+        "scale_note": "Tract level. Uninsured and disease values are MODELED (CDC PLACES). No-vehicle is a survey estimate (SVI). Distances are straight lines to federally recognized sites inside the county: an upper bound."
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "planner",
+   "timestamp": 1800000007.8,
+   "actions": {
+    "stateDelta": {
+     "plan": "Changed from round 1: the reviewer rejected 006801 (incomplete data) and 006602 (smaller tied tract).\n\n*Tract level. Uninsured is modeled (CDC PLACES); no vehicle is a survey estimate (SVI); distances are straight-line upper bounds.*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km to a safety-net site *(straight-line)* |\n| 2 | 007604 | 76.9 | 3,191 | 20% uninsured *(modeled)*, 33% no vehicle *(survey)* |\n| 3 | 006802 | 76.2 | 1,384 | 68% of households have no car *(survey)* |\n| 4 | 008701 | 74.4 | 3,333 | Larger tied tract; reaches more people |\n\nPassed over: 011421 and 011431, within 1.6 km of Saturday 1.\nNear-tie with Saturday 4: 007808 (74.3). This is a tie: the inputs are modeled."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "Changed from round 1: the reviewer rejected 006801 (incomplete data) and 006602 (smaller tied tract).\n\n*Tract level. Uninsured is modeled (CDC PLACES); no vehicle is a survey estimate (SVI); distances are straight-line upper bounds.*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km to a safety-net site *(straight-line)* |\n| 2 | 007604 | 76.9 | 3,191 | 20% uninsured *(modeled)*, 33% no vehicle *(survey)* |\n| 3 | 006802 | 76.2 | 1,384 | 68% of households have no car *(survey)* |\n| 4 | 008701 | 74.4 | 3,333 | Larger tied tract; reaches more people |\n\nPassed over: 011421 and 011431, within 1.6 km of Saturday 1.\nNear-tie with Saturday 4: 007808 (74.3). This is a tie: the inputs are modeled."
+     }
+    ]
+   }
+  },
+  {
+   "author": "reviewer",
+   "timestamp": 1800000008.3,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "check_plan_rules",
+       "args": {}
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "reviewer",
+   "timestamp": 1800000008.8,
+   "actions": {
+    "stateDelta": {
+     "plan_approved": true,
+     "review_findings": []
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "check_plan_rules",
+       "response": {
+        "round": 2,
+        "approved": true,
+        "findings": []
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "reviewer",
+   "timestamp": 1800000009.3,
+   "actions": {
+    "stateDelta": {
+     "review": "**APPROVED**\n- Saturday 4 (008701) is 0.1 points ahead of 007808: a tie a person may overrule."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "**APPROVED**\n- Saturday 4 (008701) is 0.1 points ahead of 007808: a tie a person may overrule."
+     }
+    ]
+   }
+  },
+  {
+   "author": "auditor",
+   "timestamp": 1800000009.8,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "audit_plan",
+       "args": {
+        "tract_ids_csv": "13121011430,13121007604,13121006802,13121008701"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "auditor",
+   "timestamp": 1800000010.3,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "audit_plan",
+       "response": {
+        "result": "[{\"grp\": \"hispanic_pop\", \"source\": \"ACS\", \"county_share\": 0.07, \"plan_share\": 0.29, \"ratio_vs_county\": 4.11}, {\"grp\": \"limited English\", \"source\": \"SVI\", \"county_share\": 0.018, \"plan_share\": 0.061, \"ratio_vs_county\": 3.49}, {\"grp\": \"no vehicle\", \"source\": \"SVI\", \"county_share\": 0.1, \"plan_share\": 0.22, \"ratio_vs_county\": 2.12}, {\"grp\": \"below poverty (approx)\", \"source\": \"ACS\", \"county_share\": 0.13, \"plan_share\": 0.2, \"ratio_vs_county\": 1.56}, {\"grp\": \"black_pop\", \"source\": \"ACS\", \"county_share\": 0.43, \"plan_share\": 0.56, \"ratio_vs_county\": 1.3}, {\"grp\": \"age 65+\", \"source\": \"SVI\", \"county_share\": 0.12, \"plan_share\": 0.05, \"ratio_vs_county\": 0.39}, {\"grp\": \"white_pop\", \"source\": \"ACS\", \"county_share\": 0.39, \"plan_share\": 0.09, \"ratio_vs_county\": 0.22}, {\"grp\": \"asian_pop\", \"source\": \"ACS\", \"county_share\": 0.07, \"plan_share\": 0.01, \"ratio_vs_county\": 0.09}]"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "auditor",
+   "timestamp": 1800000010.8,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionCall": {
+       "name": "audit_top_decile",
+       "args": {}
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "auditor",
+   "timestamp": 1800000011.3,
+   "actions": {
+    "stateDelta": {}
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "functionResponse": {
+       "name": "audit_top_decile",
+       "response": {
+        "result": "[{\"grp\": \"below poverty (approx)\", \"county_share\": 0.13, \"top_decile_share\": 0.31, \"ratio_vs_county\": 2.41, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}, {\"grp\": \"hispanic_pop\", \"county_share\": 0.07, \"top_decile_share\": 0.13, \"ratio_vs_county\": 1.86, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}, {\"grp\": \"black_pop\", \"county_share\": 0.43, \"top_decile_share\": 0.74, \"ratio_vs_county\": 1.72, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}, {\"grp\": \"limited English\", \"county_share\": 0.018, \"top_decile_share\": 0.029, \"ratio_vs_county\": 1.66, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}, {\"grp\": \"age 65+\", \"county_share\": 0.12, \"top_decile_share\": 0.12, \"ratio_vs_county\": 1.0, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}, {\"grp\": \"white_pop\", \"county_share\": 0.39, \"top_decile_share\": 0.09, \"ratio_vs_county\": 0.23, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}, {\"grp\": \"asian_pop\", \"county_share\": 0.07, \"top_decile_share\": 0.01, \"ratio_vs_county\": 0.13, \"tracts_selected\": 33, \"acs_match_rate\": 1.0}]"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "author": "auditor",
+   "timestamp": 1800000011.8,
+   "actions": {
+    "stateDelta": {
+     "audit": "| Group | County | Plan | Ratio |\n|---|---|---|---|\n| Hispanic | 7% | 29% | 4.11\u00d7 |\n| Limited English | 1.8% | 6.1% | 3.49\u00d7 |\n| No vehicle | 10% | 22% | 2.12\u00d7 |\n| Below poverty | 13% | 20% | 1.56\u00d7 |\n| Black | 43% | 56% | 1.30\u00d7 |\n| Age 65+ | 12% | 5% | 0.39\u00d7 |\n| White | 39% | 9% | 0.22\u00d7 |\n| Asian | 7% | 1% | 0.09\u00d7 |\n\nTop 10% of tracts: below poverty 2.41\u00d7, Hispanic 1.86\u00d7, Black 1.72\u00d7, limited English 1.66\u00d7, age 65+ 1.00\u00d7.\n\nThe plan lands on poorer, carless neighborhoods. Below 0.5\u00d7: age 65+ (0.39\u00d7), because the uninsured input counts adults 18-64 and almost everyone over 65 has Medicare; White and Asian residents (0.22\u00d7, 0.09\u00d7).\nLimited English is 3.49\u00d7: the outreach material needs Spanish.\nFour tracts is a tiny sample; read it next to the top-decile audit."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "| Group | County | Plan | Ratio |\n|---|---|---|---|\n| Hispanic | 7% | 29% | 4.11\u00d7 |\n| Limited English | 1.8% | 6.1% | 3.49\u00d7 |\n| No vehicle | 10% | 22% | 2.12\u00d7 |\n| Below poverty | 13% | 20% | 1.56\u00d7 |\n| Black | 43% | 56% | 1.30\u00d7 |\n| Age 65+ | 12% | 5% | 0.39\u00d7 |\n| White | 39% | 9% | 0.22\u00d7 |\n| Asian | 7% | 1% | 0.09\u00d7 |\n\nTop 10% of tracts: below poverty 2.41\u00d7, Hispanic 1.86\u00d7, Black 1.72\u00d7, limited English 1.66\u00d7, age 65+ 1.00\u00d7.\n\nThe plan lands on poorer, carless neighborhoods. Below 0.5\u00d7: age 65+ (0.39\u00d7), because the uninsured input counts adults 18-64 and almost everyone over 65 has Medicare; White and Asian residents (0.22\u00d7, 0.09\u00d7).\nLimited English is 3.49\u00d7: the outreach material needs Spanish.\nFour tracts is a tiny sample; read it next to the top-decile audit."
+     }
+    ]
+   }
+  },
+  {
+   "author": "explainer",
+   "timestamp": 1800000012.3,
+   "actions": {
+    "stateDelta": {
+     "flyer": "## Saturday 1\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 2\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 3\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 4\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Neighborhoods not picked\n### English\nThe van can only go to four places this month. It is going to a place near you, so it does not see the same people twice. You are welcome there.\n### Espa\u00f1ol\nLa camioneta solo va a cuatro lugares este mes. Va a un lugar cerca de usted, para no ver a las mismas personas dos veces. Usted es bienvenido all\u00ed."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "## Saturday 1\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 2\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 3\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 4\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Neighborhoods not picked\n### English\nThe van can only go to four places this month. It is going to a place near you, so it does not see the same people twice. You are welcome there.\n### Espa\u00f1ol\nLa camioneta solo va a cuatro lugares este mes. Va a un lugar cerca de usted, para no ver a las mismas personas dos veces. Usted es bienvenido all\u00ed."
+     }
+    ]
+   }
+  },
+  {
+   "author": "reporter",
+   "timestamp": 1800000012.8,
+   "actions": {
+    "stateDelta": {
+     "clinic_plan": "## 1. Where the van goes, and why\n*(planner, approved by the reviewer in round 2)*\nChanged from round 1: the reviewer rejected 006801 (incomplete data) and 006602 (smaller tied tract).\n\n*Tract level. Uninsured is modeled (CDC PLACES); no vehicle is a survey estimate (SVI); distances are straight-line upper bounds.*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km to a safety-net site *(straight-line)* |\n| 2 | 007604 | 76.9 | 3,191 | 20% uninsured *(modeled)*, 33% no vehicle *(survey)* |\n| 3 | 006802 | 76.2 | 1,384 | 68% of households have no car *(survey)* |\n| 4 | 008701 | 74.4 | 3,333 | Larger tied tract; reaches more people |\n\nPassed over: 011421 and 011431, within 1.6 km of Saturday 1.\nNear-tie with Saturday 4: 007808 (74.3). This is a tie: the inputs are modeled.\n\n## 2. What we could not tell you\n- 325 of 326 tracts scored; 1 not scored.\n- 55 safety-net sites; 443,800 people live more than 5 km from one; worst 28.6 km *(straight-line upper bound)*.\n- **0 live shortage areas.** No federal signal is not the same as no problem.\n- Respiratory data is one Health Service Area figure for Clayton, DeKalb, Fulton and Gwinnett.\n- PM2.5 p90/p10 = 1.049: air cannot separate neighborhoods.\nRespiratory context is regional (4 counties): Across the last weeks the shares are flat. The Health Service Area covers Clayton, DeKalb, Fulton and Gwinnett.\nThis is a multi-county regional figure; it says nothing about any neighborhood or tract and must not be used to choose between tracts.\n\n## 3. Who this plan lands on\n| Group | County | Plan | Ratio |\n|---|---|---|---|\n| Hispanic | 7% | 29% | 4.11\u00d7 |\n| Limited English | 1.8% | 6.1% | 3.49\u00d7 |\n| No vehicle | 10% | 22% | 2.12\u00d7 |\n| Below poverty | 13% | 20% | 1.56\u00d7 |\n| Black | 43% | 56% | 1.30\u00d7 |\n| Age 65+ | 12% | 5% | 0.39\u00d7 |\n| White | 39% | 9% | 0.22\u00d7 |\n| Asian | 7% | 1% | 0.09\u00d7 |\n\nTop 10% of tracts: below poverty 2.41\u00d7, Hispanic 1.86\u00d7, Black 1.72\u00d7, limited English 1.66\u00d7, age 65+ 1.00\u00d7.\n\nThe plan lands on poorer, carless neighborhoods. Below 0.5\u00d7: age 65+ (0.39\u00d7), because the uninsured input counts adults 18-64 and almost everyone over 65 has Medicare; White and Asian residents (0.22\u00d7, 0.09\u00d7).\nLimited English is 3.49\u00d7: the outreach material needs Spanish.\nFour tracts is a tiny sample; read it next to the top-decile audit.\n\n## 4. What we hand to the neighborhood\n## Saturday 1\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 2\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 3\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 4\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Neighborhoods not picked\n### English\nThe van can only go to four places this month. It is going to a place near you, so it does not see the same people twice. You are welcome there.\n### Espa\u00f1ol\nLa camioneta solo va a cuatro lugares este mes. Va a un lugar cerca de usted, para no ver a las mismas personas dos veces. Usted es bienvenido all\u00ed.\n\n## Where our agents disagreed\n- Round 1: the reviewer rejected 006801 in favor of 006802 (incomplete data).\n- Round 1: the reviewer rejected 006602 in favor of 008701 (smaller tied tract).\n- The plan reaches residents over 65 at 0.39\u00d7; the audit reports this and does not re-plan."
+    }
+   },
+   "content": {
+    "role": "model",
+    "parts": [
+     {
+      "text": "## 1. Where the van goes, and why\n*(planner, approved by the reviewer in round 2)*\nChanged from round 1: the reviewer rejected 006801 (incomplete data) and 006602 (smaller tied tract).\n\n*Tract level. Uninsured is modeled (CDC PLACES); no vehicle is a survey estimate (SVI); distances are straight-line upper bounds.*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km to a safety-net site *(straight-line)* |\n| 2 | 007604 | 76.9 | 3,191 | 20% uninsured *(modeled)*, 33% no vehicle *(survey)* |\n| 3 | 006802 | 76.2 | 1,384 | 68% of households have no car *(survey)* |\n| 4 | 008701 | 74.4 | 3,333 | Larger tied tract; reaches more people |\n\nPassed over: 011421 and 011431, within 1.6 km of Saturday 1.\nNear-tie with Saturday 4: 007808 (74.3). This is a tie: the inputs are modeled.\n\n## 2. What we could not tell you\n- 325 of 326 tracts scored; 1 not scored.\n- 55 safety-net sites; 443,800 people live more than 5 km from one; worst 28.6 km *(straight-line upper bound)*.\n- **0 live shortage areas.** No federal signal is not the same as no problem.\n- Respiratory data is one Health Service Area figure for Clayton, DeKalb, Fulton and Gwinnett.\n- PM2.5 p90/p10 = 1.049: air cannot separate neighborhoods.\nRespiratory context is regional (4 counties): Across the last weeks the shares are flat. The Health Service Area covers Clayton, DeKalb, Fulton and Gwinnett.\nThis is a multi-county regional figure; it says nothing about any neighborhood or tract and must not be used to choose between tracts.\n\n## 3. Who this plan lands on\n| Group | County | Plan | Ratio |\n|---|---|---|---|\n| Hispanic | 7% | 29% | 4.11\u00d7 |\n| Limited English | 1.8% | 6.1% | 3.49\u00d7 |\n| No vehicle | 10% | 22% | 2.12\u00d7 |\n| Below poverty | 13% | 20% | 1.56\u00d7 |\n| Black | 43% | 56% | 1.30\u00d7 |\n| Age 65+ | 12% | 5% | 0.39\u00d7 |\n| White | 39% | 9% | 0.22\u00d7 |\n| Asian | 7% | 1% | 0.09\u00d7 |\n\nTop 10% of tracts: below poverty 2.41\u00d7, Hispanic 1.86\u00d7, Black 1.72\u00d7, limited English 1.66\u00d7, age 65+ 1.00\u00d7.\n\nThe plan lands on poorer, carless neighborhoods. Below 0.5\u00d7: age 65+ (0.39\u00d7), because the uninsured input counts adults 18-64 and almost everyone over 65 has Medicare; White and Asian residents (0.22\u00d7, 0.09\u00d7).\nLimited English is 3.49\u00d7: the outreach material needs Spanish.\nFour tracts is a tiny sample; read it next to the top-decile audit.\n\n## 4. What we hand to the neighborhood\n## Saturday 1\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 2\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 3\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 4\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Neighborhoods not picked\n### English\nThe van can only go to four places this month. It is going to a place near you, so it does not see the same people twice. You are welcome there.\n### Espa\u00f1ol\nLa camioneta solo va a cuatro lugares este mes. Va a un lugar cerca de usted, para no ver a las mismas personas dos veces. Usted es bienvenido all\u00ed.\n\n## Where our agents disagreed\n- Round 1: the reviewer rejected 006801 in favor of 006802 (incomplete data).\n- Round 1: the reviewer rejected 006602 in favor of 008701 (smaller tied tract).\n- The plan reaches residents over 65 at 0.39\u00d7; the audit reports this and does not re-plan."
+     }
+    ]
+   }
+  }
+ ],
+ "state": {
+  "excluded_geo_ids": [
+   "13121006801",
+   "13121006602"
+  ],
+  "rejection_log": [
+   {
+    "round": 1,
+    "rule": "incomplete_data_displaced_complete_neighbour",
+    "reject": "13121006801",
+    "prefer": "13121006802",
+    "detail": "Saturday 2 (tract 13121006801, score 77.2) was scored with 1 input(s) missing. Tract 13121006802 is 0.9 km away, has complete data and scores 76.2: within 2 points, which is a tie for modeled estimates. Prefer the tract we can fully defend."
+   },
+   {
+    "round": 1,
+    "rule": "tie_broken_by_population_reached",
+    "reject": "13121006602",
+    "prefer": "13121008701",
+    "detail": "Saturday 4 (tract 13121006602, 1,050 people, score 76.2) is tied with tract 13121008701 (3,333 people, score 74.4). One van-day reaches more people there."
+   }
+  ],
+  "plan_history": [
+   {
+    "round": 1,
+    "picked": [
+     {
+      "geo_id": "13121011430",
+      "need_score": 78.2,
+      "need_rank": 0,
+      "total_pop": 4338,
+      "pct_uninsured": 25,
+      "pct_no_vehicle": 7,
+      "pct_limited_english": null,
+      "km_to_safety_net": 13.5,
+      "components_missing": 0,
+      "reason": "uninsured, far from care",
+      "saturday": 1,
+      "latitude": 33.6,
+      "longitude": -84.5
+     },
+     {
+      "geo_id": "13121006801",
+      "need_score": 77.2,
+      "need_rank": 0,
+      "total_pop": 2297,
+      "pct_uninsured": 35,
+      "pct_no_vehicle": null,
+      "pct_limited_english": null,
+      "km_to_safety_net": 1.4,
+      "components_missing": 1,
+      "reason": "highest uninsured",
+      "saturday": 2,
+      "latitude": 33.75,
+      "longitude": -84.42
+     },
+     {
+      "geo_id": "13121007604",
+      "need_score": 76.9,
+      "need_rank": 0,
+      "total_pop": 3191,
+      "pct_uninsured": 20,
+      "pct_no_vehicle": 33,
+      "pct_limited_english": null,
+      "km_to_safety_net": 4.4,
+      "components_missing": 0,
+      "reason": "mobility, chronic disease",
+      "saturday": 3,
+      "latitude": 33.7,
+      "longitude": -84.3
+     },
+     {
+      "geo_id": "13121006602",
+      "need_score": 76.15,
+      "need_rank": 0,
+      "total_pop": 1050,
+      "pct_uninsured": 22,
+      "pct_no_vehicle": 46.1,
+      "pct_limited_english": null,
+      "km_to_safety_net": 2.2,
+      "components_missing": 0,
+      "reason": "no vehicle",
+      "saturday": 4,
+      "latitude": 33.85,
+      "longitude": -84.35
+     }
+    ],
+    "passed_over": [
+     {
+      "geo_id": "13121011421",
+      "need_score": 78.1,
+      "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+      "conflicts_with": "13121011430"
+     },
+     {
+      "geo_id": "13121011431",
+      "need_score": 77.0,
+      "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+      "conflicts_with": "13121011430"
+     },
+     {
+      "geo_id": "13121006802",
+      "need_score": 76.2,
+      "reason": "0.9 km from Saturday 2 (tract 13121006801); likely the same people",
+      "conflicts_with": "13121006801"
+     }
+    ],
+    "excluded": []
+   },
+   {
+    "round": 2,
+    "picked": [
+     {
+      "geo_id": "13121011430",
+      "need_score": 78.2,
+      "need_rank": 0,
+      "total_pop": 4338,
+      "pct_uninsured": 25,
+      "pct_no_vehicle": 7,
+      "pct_limited_english": null,
+      "km_to_safety_net": 13.5,
+      "components_missing": 0,
+      "reason": "uninsured, far from care",
+      "saturday": 1,
+      "latitude": 33.6,
+      "longitude": -84.5
+     },
+     {
+      "geo_id": "13121007604",
+      "need_score": 76.9,
+      "need_rank": 0,
+      "total_pop": 3191,
+      "pct_uninsured": 20,
+      "pct_no_vehicle": 33,
+      "pct_limited_english": null,
+      "km_to_safety_net": 4.4,
+      "components_missing": 0,
+      "reason": "mobility, chronic disease",
+      "saturday": 2,
+      "latitude": 33.7,
+      "longitude": -84.3
+     },
+     {
+      "geo_id": "13121006802",
+      "need_score": 76.2,
+      "need_rank": 0,
+      "total_pop": 1384,
+      "pct_uninsured": null,
+      "pct_no_vehicle": 67.6,
+      "pct_limited_english": null,
+      "km_to_safety_net": 1.26,
+      "components_missing": 0,
+      "reason": "no vehicle",
+      "saturday": 3,
+      "latitude": 33.758,
+      "longitude": -84.42
+     },
+     {
+      "geo_id": "13121008701",
+      "need_score": 74.4,
+      "need_rank": 0,
+      "total_pop": 3333,
+      "pct_uninsured": null,
+      "pct_no_vehicle": null,
+      "pct_limited_english": null,
+      "km_to_safety_net": 4.4,
+      "components_missing": 0,
+      "reason": "uninsured",
+      "saturday": 4,
+      "latitude": 33.95,
+      "longitude": -84.25
+     }
+    ],
+    "passed_over": [
+     {
+      "geo_id": "13121011421",
+      "need_score": 78.1,
+      "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+      "conflicts_with": "13121011430"
+     },
+     {
+      "geo_id": "13121011431",
+      "need_score": 77.0,
+      "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+      "conflicts_with": "13121011430"
+     }
+    ],
+    "excluded": [
+     "13121006602",
+     "13121006801"
+    ]
+   }
+  ],
+  "plan_round": 2,
+  "plan_approved": true,
+  "picked_tract_ids": "13121011430,13121007604,13121006802,13121008701",
+  "plan_data": {
+   "round": 2,
+   "picked": [
+    {
+     "geo_id": "13121011430",
+     "need_score": 78.2,
+     "need_rank": 0,
+     "latitude": 33.6,
+     "longitude": -84.5,
+     "km_to_safety_net": 13.5,
+     "total_pop": 4338,
+     "pct_uninsured": 25,
+     "pct_no_vehicle": 7,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "uninsured, far from care",
+     "saturday": 1
+    },
+    {
+     "geo_id": "13121007604",
+     "need_score": 76.9,
+     "need_rank": 0,
+     "latitude": 33.7,
+     "longitude": -84.3,
+     "km_to_safety_net": 4.4,
+     "total_pop": 3191,
+     "pct_uninsured": 20,
+     "pct_no_vehicle": 33,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "mobility, chronic disease",
+     "saturday": 2
+    },
+    {
+     "geo_id": "13121006802",
+     "need_score": 76.2,
+     "need_rank": 0,
+     "latitude": 33.758,
+     "longitude": -84.42,
+     "km_to_safety_net": 1.26,
+     "total_pop": 1384,
+     "pct_uninsured": null,
+     "pct_no_vehicle": 67.6,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "no vehicle",
+     "saturday": 3
+    },
+    {
+     "geo_id": "13121008701",
+     "need_score": 74.4,
+     "need_rank": 0,
+     "latitude": 33.95,
+     "longitude": -84.25,
+     "km_to_safety_net": 4.4,
+     "total_pop": 3333,
+     "pct_uninsured": null,
+     "pct_no_vehicle": null,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "uninsured",
+     "saturday": 4
+    }
+   ],
+   "skipped": [
+    {
+     "geo_id": "13121011421",
+     "need_score": 78.1,
+     "reason": "1.6 km from Saturday 1 (tract 13121011430); likely the same people",
+     "conflicts_with": "13121011430"
+    },
+    {
+     "geo_id": "13121011431",
+     "need_score": 77.0,
+     "reason": "0.5 km from Saturday 1 (tract 13121011430); likely the same people",
+     "conflicts_with": "13121011430"
+    }
+   ],
+   "near_ties": [
+    {
+     "geo_id": "13121007808",
+     "need_score": 74.3,
+     "need_rank": 0,
+     "latitude": 34.05,
+     "longitude": -84.2,
+     "km_to_safety_net": 1.6,
+     "total_pop": 3749,
+     "pct_uninsured": null,
+     "pct_no_vehicle": 55.8,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "no vehicle"
+    }
+   ],
+   "candidates": [
+    {
+     "geo_id": "13121011430",
+     "need_score": 78.2,
+     "need_rank": 0,
+     "latitude": 33.6,
+     "longitude": -84.5,
+     "km_to_safety_net": 13.5,
+     "total_pop": 4338,
+     "pct_uninsured": 25,
+     "pct_no_vehicle": 7,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "uninsured, far from care"
+    },
+    {
+     "geo_id": "13121011421",
+     "need_score": 78.1,
+     "need_rank": 0,
+     "latitude": 33.614,
+     "longitude": -84.5,
+     "km_to_safety_net": 14.6,
+     "total_pop": 3933,
+     "pct_uninsured": null,
+     "pct_no_vehicle": null,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "uninsured, far from care"
+    },
+    {
+     "geo_id": "13121011431",
+     "need_score": 77.0,
+     "need_rank": 0,
+     "latitude": 33.6045,
+     "longitude": -84.5,
+     "km_to_safety_net": 13.9,
+     "total_pop": 1970,
+     "pct_uninsured": null,
+     "pct_no_vehicle": null,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "uninsured, far from care"
+    },
+    {
+     "geo_id": "13121007604",
+     "need_score": 76.9,
+     "need_rank": 0,
+     "latitude": 33.7,
+     "longitude": -84.3,
+     "km_to_safety_net": 4.4,
+     "total_pop": 3191,
+     "pct_uninsured": 20,
+     "pct_no_vehicle": 33,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "mobility, chronic disease"
+    },
+    {
+     "geo_id": "13121006802",
+     "need_score": 76.2,
+     "need_rank": 0,
+     "latitude": 33.758,
+     "longitude": -84.42,
+     "km_to_safety_net": 1.26,
+     "total_pop": 1384,
+     "pct_uninsured": null,
+     "pct_no_vehicle": 67.6,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "no vehicle"
+    },
+    {
+     "geo_id": "13121008701",
+     "need_score": 74.4,
+     "need_rank": 0,
+     "latitude": 33.95,
+     "longitude": -84.25,
+     "km_to_safety_net": 4.4,
+     "total_pop": 3333,
+     "pct_uninsured": null,
+     "pct_no_vehicle": null,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "uninsured"
+    },
+    {
+     "geo_id": "13121007808",
+     "need_score": 74.3,
+     "need_rank": 0,
+     "latitude": 34.05,
+     "longitude": -84.2,
+     "km_to_safety_net": 1.6,
+     "total_pop": 3749,
+     "pct_uninsured": null,
+     "pct_no_vehicle": 55.8,
+     "pct_limited_english": null,
+     "components_missing": 0,
+     "reason": "no vehicle"
+    }
+   ],
+   "excluded": [
+    "13121006602",
+    "13121006801"
+   ]
+  },
+  "review_findings": [],
+  "evidence_respiratory": "Across the last weeks the shares are flat. The Health Service Area covers Clayton, DeKalb, Fulton and Gwinnett.\nThis is a multi-county regional figure; it says nothing about any neighborhood or tract and must not be used to choose between tracts.",
+  "evidence_coverage": "- 325 of 326 tracts scored; 1 not scored.\n- 55 safety-net sites; 443,800 people live more than 5 km from one; worst 28.6 km *(straight-line upper bound)*.\n- **0 live shortage areas.** No federal signal is not the same as no problem.\n- Respiratory data is one Health Service Area figure for Clayton, DeKalb, Fulton and Gwinnett.\n- PM2.5 p90/p10 = 1.049: air cannot separate neighborhoods.",
+  "evidence_need": "- **011430** (78.2): uninsured adults, nearest safety-net site 13.5 km *(modeled; straight-line upper bound)*.\n- **011421** (78.1) and **011431** (77.0) sit next to 011430.\n- **006801** (77.2): 35% uninsured *(modeled)*; scored with 1 input missing.\n- **006802** (76.2): 68% of households have no car *(survey)*.",
+  "plan": "Changed from round 1: the reviewer rejected 006801 (incomplete data) and 006602 (smaller tied tract).\n\n*Tract level. Uninsured is modeled (CDC PLACES); no vehicle is a survey estimate (SVI); distances are straight-line upper bounds.*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km to a safety-net site *(straight-line)* |\n| 2 | 007604 | 76.9 | 3,191 | 20% uninsured *(modeled)*, 33% no vehicle *(survey)* |\n| 3 | 006802 | 76.2 | 1,384 | 68% of households have no car *(survey)* |\n| 4 | 008701 | 74.4 | 3,333 | Larger tied tract; reaches more people |\n\nPassed over: 011421 and 011431, within 1.6 km of Saturday 1.\nNear-tie with Saturday 4: 007808 (74.3). This is a tie: the inputs are modeled.",
+  "review": "**APPROVED**\n- Saturday 4 (008701) is 0.1 points ahead of 007808: a tie a person may overrule.",
+  "audit": "| Group | County | Plan | Ratio |\n|---|---|---|---|\n| Hispanic | 7% | 29% | 4.11\u00d7 |\n| Limited English | 1.8% | 6.1% | 3.49\u00d7 |\n| No vehicle | 10% | 22% | 2.12\u00d7 |\n| Below poverty | 13% | 20% | 1.56\u00d7 |\n| Black | 43% | 56% | 1.30\u00d7 |\n| Age 65+ | 12% | 5% | 0.39\u00d7 |\n| White | 39% | 9% | 0.22\u00d7 |\n| Asian | 7% | 1% | 0.09\u00d7 |\n\nTop 10% of tracts: below poverty 2.41\u00d7, Hispanic 1.86\u00d7, Black 1.72\u00d7, limited English 1.66\u00d7, age 65+ 1.00\u00d7.\n\nThe plan lands on poorer, carless neighborhoods. Below 0.5\u00d7: age 65+ (0.39\u00d7), because the uninsured input counts adults 18-64 and almost everyone over 65 has Medicare; White and Asian residents (0.22\u00d7, 0.09\u00d7).\nLimited English is 3.49\u00d7: the outreach material needs Spanish.\nFour tracts is a tiny sample; read it next to the top-decile audit.",
+  "flyer": "## Saturday 1\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 2\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 3\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 4\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Neighborhoods not picked\n### English\nThe van can only go to four places this month. It is going to a place near you, so it does not see the same people twice. You are welcome there.\n### Espa\u00f1ol\nLa camioneta solo va a cuatro lugares este mes. Va a un lugar cerca de usted, para no ver a las mismas personas dos veces. Usted es bienvenido all\u00ed.",
+  "clinic_plan": "## 1. Where the van goes, and why\n*(planner, approved by the reviewer in round 2)*\nChanged from round 1: the reviewer rejected 006801 (incomplete data) and 006602 (smaller tied tract).\n\n*Tract level. Uninsured is modeled (CDC PLACES); no vehicle is a survey estimate (SVI); distances are straight-line upper bounds.*\n\n| Saturday | Tract | Score | People | Why |\n|---|---|---|---|---|\n| 1 | 011430 | 78.2 | 4,338 | 25% uninsured *(modeled)*, 13.5 km to a safety-net site *(straight-line)* |\n| 2 | 007604 | 76.9 | 3,191 | 20% uninsured *(modeled)*, 33% no vehicle *(survey)* |\n| 3 | 006802 | 76.2 | 1,384 | 68% of households have no car *(survey)* |\n| 4 | 008701 | 74.4 | 3,333 | Larger tied tract; reaches more people |\n\nPassed over: 011421 and 011431, within 1.6 km of Saturday 1.\nNear-tie with Saturday 4: 007808 (74.3). This is a tie: the inputs are modeled.\n\n## 2. What we could not tell you\n- 325 of 326 tracts scored; 1 not scored.\n- 55 safety-net sites; 443,800 people live more than 5 km from one; worst 28.6 km *(straight-line upper bound)*.\n- **0 live shortage areas.** No federal signal is not the same as no problem.\n- Respiratory data is one Health Service Area figure for Clayton, DeKalb, Fulton and Gwinnett.\n- PM2.5 p90/p10 = 1.049: air cannot separate neighborhoods.\nRespiratory context is regional (4 counties): Across the last weeks the shares are flat. The Health Service Area covers Clayton, DeKalb, Fulton and Gwinnett.\nThis is a multi-county regional figure; it says nothing about any neighborhood or tract and must not be used to choose between tracts.\n\n## 3. Who this plan lands on\n| Group | County | Plan | Ratio |\n|---|---|---|---|\n| Hispanic | 7% | 29% | 4.11\u00d7 |\n| Limited English | 1.8% | 6.1% | 3.49\u00d7 |\n| No vehicle | 10% | 22% | 2.12\u00d7 |\n| Below poverty | 13% | 20% | 1.56\u00d7 |\n| Black | 43% | 56% | 1.30\u00d7 |\n| Age 65+ | 12% | 5% | 0.39\u00d7 |\n| White | 39% | 9% | 0.22\u00d7 |\n| Asian | 7% | 1% | 0.09\u00d7 |\n\nTop 10% of tracts: below poverty 2.41\u00d7, Hispanic 1.86\u00d7, Black 1.72\u00d7, limited English 1.66\u00d7, age 65+ 1.00\u00d7.\n\nThe plan lands on poorer, carless neighborhoods. Below 0.5\u00d7: age 65+ (0.39\u00d7), because the uninsured input counts adults 18-64 and almost everyone over 65 has Medicare; White and Asian residents (0.22\u00d7, 0.09\u00d7).\nLimited English is 3.49\u00d7: the outreach material needs Spanish.\nFour tracts is a tiny sample; read it next to the top-decile audit.\n\n## 4. What we hand to the neighborhood\n## Saturday 1\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 2\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 3\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Saturday 4\n### English\nA free health check is coming to your neighborhood. Come on Saturday at TIME to ADDRESS. A nurse will check your blood pressure and blood sugar. We can help you find a clinic. You do not need insurance.\n### Espa\u00f1ol\nUn chequeo de salud gratis viene a su vecindario. Venga el s\u00e1bado a las TIME a ADDRESS. Una enfermera le revisa la presi\u00f3n y el az\u00facar en la sangre. Le ayudamos a encontrar una cl\u00ednica. No necesita seguro.\n\n## Neighborhoods not picked\n### English\nThe van can only go to four places this month. It is going to a place near you, so it does not see the same people twice. You are welcome there.\n### Espa\u00f1ol\nLa camioneta solo va a cuatro lugares este mes. Va a un lugar cerca de usted, para no ver a las mismas personas dos veces. Usted es bienvenido all\u00ed.\n\n## Where our agents disagreed\n- Round 1: the reviewer rejected 006801 in favor of 006802 (incomplete data).\n- Round 1: the reviewer rejected 006602 in favor of 008701 (smaller tied tract).\n- The plan reaches residents over 65 at 0.39\u00d7; the audit reports this and does not re-plan."
+ }
+}

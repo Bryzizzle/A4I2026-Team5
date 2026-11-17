@@ -7,3 +7,4 @@ __pycache__/
 clinic_planner/.adk/
 .agent_runtime.env
 .agent_runtime_id
+evals/results/

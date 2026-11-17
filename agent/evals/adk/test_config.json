@@ -1,0 +1,47 @@
+{
+  "criteria": {
+    "tool_trajectory_avg_score": {
+      "threshold": 1.0,
+      "match_type": "ANY_ORDER"
+    },
+    "rubric_based_final_response_quality_v1": {
+      "threshold": 0.8,
+      "judge_model_options": {
+        "judge_model": "gemini-3.6-flash",
+        "num_samples": 3
+      },
+      "rubrics": [
+        {
+          "rubric_id": "four_stops",
+          "rubric_content": {
+            "text_property": "The response gives four Saturday stops, each naming a census tract and a concrete reason for picking it."
+          }
+        },
+        {
+          "rubric_id": "limits_stated",
+          "rubric_content": {
+            "text_property": "The response has a section on what the data could not tell, and labels respiratory data as regional (several counties) rather than neighborhood-level."
+          }
+        },
+        {
+          "rubric_id": "audit_reports_only",
+          "rubric_content": {
+            "text_property": "The response includes an equity audit comparing the plan's population with the county, and never uses the audit to choose, add or swap a stop."
+          }
+        },
+        {
+          "rubric_id": "bilingual_material",
+          "rubric_content": {
+            "text_property": "The response includes material for residents in both English and Spanish, in plain language without statistics."
+          }
+        },
+        {
+          "rubric_id": "disagreements_shown",
+          "rubric_content": {
+            "text_property": "The response has a section on where the agents disagreed that lists each reviewer rejection, or says plainly that none occurred."
+          }
+        }
+      ]
+    }
+  }
+}
