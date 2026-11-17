@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinic Plan Console (debug)</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 14px/1.4 system-ui, sans-serif; margin: 16px; background: Canvas; color: CanvasText; }
+  button { margin-right: 8px; padding: 6px 12px; }
+  pre { white-space: pre-wrap; border: 1px solid #8884; padding: 8px; height: 70vh; overflow: auto; }
+</style>
+</head>
+<body>
+<h1>Clinic Plan Console: stream check</h1>
+<p>Phase 1 debug page. It proves the event stream works end to end; the real console replaces it.</p>
+<button id="live">Run live</button><button id="replay">Replay last run</button>
+<span id="status"></span>
+<pre id="log"></pre>
+<script>
+const log = document.getElementById('log'), status = document.getElementById('status');
+function show(name, data) {
+  const d = JSON.parse(data);
+  let line = name;
+  if (name === 'agent') line = `${String(d.t).padStart(6)}s ${d.author.padEnd(18)} ${d.kind} ${d.tool || ''} ${d.kind === 'state' ? Object.keys(d.state_delta).join(',') : ''}`;
+  if (name === 'final') line = 'final state keys: ' + Object.keys(d.state).join(', ');
+  if (name === 'error') line = 'ERROR ' + d.message;
+  log.textContent += line + '\n'; log.scrollTop = log.scrollHeight;
+}
+async function stream(url, opts) {
+  log.textContent = ''; status.textContent = 'running…';
+  const res = await fetch(url, opts);
+  if (!res.ok) { status.textContent = `HTTP ${res.status}: ${await res.text()}`; return; }
+  const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buf = '';
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += value;
+    let i;
+    while ((i = buf.indexOf('\n\n')) >= 0) {
+      const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
+      if (chunk.startsWith(':')) continue;
+      const ev = /^event: (.*)$/m.exec(chunk), da = /^data: (.*)$/m.exec(chunk);
+      if (ev && da) show(ev[1], da[1]);
+    }
+  }
+  status.textContent = 'done';
+}
+document.getElementById('live').onclick = () => stream('/api/run', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}'});
+document.getElementById('replay').onclick = () => stream('/api/replay?speed=5');
+</script>
+</body>
+</html>
