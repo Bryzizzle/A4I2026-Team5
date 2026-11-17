@@ -109,7 +109,63 @@ We compared the neediest 10% of tracts (33 tracts) against the whole county. The
 
 ---
 
-## Still to come from the data lane
+## The plan: four Saturdays
 
-- **The actual 4 Saturdays.** Run `python3 data/plan_saturdays.py --audit` in Cloud Shell. The output gives the four tracts, the reason for each, the higher-scoring tracts we passed over and why, and the audit of those four tracts.
-- **A caution for the 4-tract audit:** 4 tracts is a tiny sample, so always show it next to the top-10% table above.
+From `python3 data/plan_saturdays.py --audit`. Rules:
+- Take the highest `need_score`.
+- Skip tracts within 1 km of an existing safety-net site.
+- Keep picks at least 3 km apart.
+
+| Saturday | Tract | Score (rank) | People | Uninsured 18–64 | No vehicle | To safety net | Why |
+|---|---|---|---:|---:|---:|---:|---|
+| 1 | `13121011430` | 78.2 (1) | 4,338 | 25% | 7% | 13.5 km | Far: uninsured and skipping checkups, with the nearest safety-net site 13.5 km away |
+| 2 | `13121006801` | 77.2 (3) | 2,297 | **35%** | unknown | 1.4 km | Highest uninsured rate in the county. **No vehicle data for this tract** |
+| 3 | `13121007604` | 76.9 (5) | 3,191 | 20% | 33% | 4.4 km | Mobility difficulty and chronic disease |
+| 4 | `13121006602` | 76.2 (7) | 1,050 | 22% | **46%** | 2.2 km | Nearly half of households have no car |
+
+*Uninsured: modeled. No vehicle: survey. Distances: measured, upper bound.*
+
+The plan covers **both kinds of need**: one far-but-has-cars tract and three close-but-no-car tracts.
+
+**Higher-scoring tracts we passed over (the "why not us?" answers):**
+
+| Tract | Score | Why it was passed over |
+|---|---:|---|
+| `13121011421` | 78.1 | 1.6 km from Saturday 1, so it's likely the same people |
+| `13121011431` | 77.0 | 0.5 km from Saturday 1 |
+| `13121006802` | 76.2 | 0.9 km from Saturday 2. It has **68% no vehicle** and complete data |
+
+**Effectively tied with Saturday 4:** `13121008701` (74.4) and `13121007808` (74.3, 3,749 people, 56% no vehicle). PLACES estimates are modeled, so a gap under 2 points isn't a real difference.
+
+### Two places the plan should be challenged (the demo moment)
+
+These are the "system rejects its own first answer" moments judges ask for.
+
+**1. Saturday 2 was picked on incomplete data, and it displaced a tract with complete data.**
+- `006801` has no vehicle figure. Its score uses the five inputs it has.
+- Its neighbor `006802`, 0.9 km away, scored only 1 point lower, has full data, and has 68% of households without a car.
+- A reviewer would reasonably swap them.
+
+**2. Saturday 4 is the smallest tract in the plan, and it's tied with a much larger one.**
+- `006602` has 1,050 people. `007808` is 1.9 points behind, has 3,749 people and 56% no vehicle.
+- With one van-day, the larger tract probably reaches more people.
+
+### Equity audit of the four picks
+
+*Auditor only. Survey: ACS and SVI. 4 tracts is a tiny sample, so always show this next to the top-10% table above.*
+
+| Group | Fulton | The 4 picks | Ratio | Top 10% ratio |
+|---|---:|---:|---:|---:|
+| Hispanic | 7% | 29% | **4.11×** | 1.86× |
+| Limited English | 1.8% | 6.1% | **3.49×** | 1.66× |
+| No vehicle | 10% | 22% | 2.12× | — |
+| Below poverty | 13% | 20% | 1.56× | 2.41× |
+| Black | 43% | 56% | 1.30× | 1.72× |
+| Age 65+ | 12% | 5% | **0.39×** | 1.00× |
+| White | 39% | 9% | 0.22× | 0.23× |
+| Asian | 7% | 1% | 0.09× | 0.13× |
+
+**What to say:**
+- **The flyer must be in Spanish.** Hispanic residents are 29% of the people in these four tracts (4.11×), and limited-English households run 3.5× the county rate. The data, not a guess, sets the language list.
+- **The plan under-reaches older residents (0.39×).** This follows from our definition: the uninsured input counts adults 18–64, and almost everyone over 65 has Medicare. It's a defensible choice, but say it out loud. A preventive van that reaches few 65+ residents is a trade-off, not an accident.
+- **The plan goes where people can't get to care:** households with no vehicle are 2.12× the county rate.
