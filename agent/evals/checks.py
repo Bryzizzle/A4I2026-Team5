@@ -20,7 +20,7 @@ import re
 from dataclasses import dataclass
 from typing import Callable, Optional
 
-from .trace import Trace, mentions_tract, short_id
+from .trace import OUTPUT_KEYS, Trace, mentions_tract, short_id
 
 PASS, FAIL, NA = "PASS", "FAIL", "N/A"
 
@@ -139,9 +139,7 @@ def _(t, c):
 
 @check("arch.all_outputs_written", "arch", "critical")
 def _(t, c):
-    keys = ["evidence_need", "evidence_coverage", "evidence_respiratory", "plan", "review",
-            "audit", "flyer", "clinic_plan"]
-    missing = [k for k in keys if not str(t.state.get(k) or "").strip()]
+    missing = [k for k in OUTPUT_KEYS.values() if not str(t.state.get(k) or "").strip()]
     return (FAIL, "state keys never written: " + ", ".join(missing)) if missing else \
            (PASS, "all 8 agent outputs present in session.state")
 

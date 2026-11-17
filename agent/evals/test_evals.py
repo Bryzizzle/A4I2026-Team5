@@ -18,7 +18,7 @@ from pathlib import Path
 
 from evals import checks as C
 from evals import judge as J
-from evals.trace import Trace
+from evals.trace import OUTPUT_KEYS, Trace
 
 GOLDEN = json.loads((Path(__file__).parent / "fixtures" / "golden_trace.json").read_text())
 
@@ -38,6 +38,7 @@ def edit_text(author, fn):
     def m(d):
         p = last_text_part(d, author)
         p["text"] = fn(p["text"])
+        d["state"][OUTPUT_KEYS[author]] = p["text"]
     return m
 
 
@@ -218,6 +219,27 @@ class FlyerParsing(unittest.TestCase):
 
     def test_reading_level_orders_text(self):
         self.assertLess(C.fk_grade("The van is here. Come and see the nurse."), C.fk_grade(HARD))
+
+
+class TraceText(unittest.TestCase):
+    def test_uses_complete_state_output_or_joins_final_event_parts(self):
+        d = copy.deepcopy(GOLDEN)
+        flyer = d["state"]["flyer"]
+        split_at = flyer.index("## Saturday 2")
+        event = next(e for e in d["events"] if e["author"] == "explainer")
+        event["content"]["parts"] = [
+            {"text": flyer[:split_at]},
+            {"text": "private thought", "thought": True},
+            {"text": flyer[split_at:]},
+        ]
+        d["events"].append({"author": "explainer", "partial": True,
+                            "content": {"parts": [{"text": "unfinished"}]}})
+
+        self.assertEqual(trace(d).text("explainer"), flyer)
+        del d["state"]["flyer"]
+        t = trace(d)
+        self.assertEqual(t.text("explainer"), flyer)
+        self.assertEqual(C.run_checks(t, {}, only={"plain.layout"})[0].status, C.PASS)
 
 
 class JudgeWithFakeModel(unittest.TestCase):
