@@ -61,6 +61,7 @@ def _reset_run_state(callback_context: CallbackContext) -> Optional[object]:
     s = callback_context.state
     s["excluded_geo_ids"] = []
     s["rejection_log"] = []
+    s["plan_history"] = []
     s["plan_round"] = 0
     s["plan_approved"] = False
     return None

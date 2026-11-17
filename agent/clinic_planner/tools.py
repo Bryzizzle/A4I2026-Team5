@@ -5,7 +5,7 @@ check_plan_rules  (reviewer)  deterministic objections to the plan the planner j
 
 They talk through session.state, not through the model:
 
-  plan_saturdays    WRITES  plan_data, picked_tract_ids, plan_round
+  plan_saturdays    WRITES  plan_data, plan_history, picked_tract_ids, plan_round
                     READS   excluded_geo_ids
   check_plan_rules  READS   plan_data
                     WRITES  plan_approved, review_findings, excluded_geo_ids, rejection_log
@@ -97,6 +97,16 @@ def plan_saturdays(tool_context: ToolContext,
         "candidates": rows,
         "excluded": sorted(excluded),
     }
+    # One entry per round, so a UI can show round 1 next to round 2 (plan_data is overwritten).
+    history = list(state.get("plan_history") or [])
+    history.append({
+        "round": state["plan_round"],
+        "picked": [{**_slim(p), "latitude": p["latitude"], "longitude": p["longitude"]}
+                   for p in plan["picked"]],
+        "passed_over": plan["skipped"],
+        "excluded": sorted(excluded),
+    })
+    state["plan_history"] = history
 
     return {
         "round": state["plan_round"],

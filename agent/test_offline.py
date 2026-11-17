@@ -85,6 +85,11 @@ class ToolsTest(unittest.TestCase):
 
         r2 = tools.check_plan_rules(ctx)
         self.assertTrue(r2["approved"], r2)
+        hist = ctx.state["plan_history"]
+        self.assertEqual([h["round"] for h in hist], [1, 2])
+        self.assertIn("006801", [p["geo_id"] for p in hist[0]["picked"]])
+        self.assertNotIn("006801", [p["geo_id"] for p in hist[1]["picked"]])
+        self.assertIn("latitude", hist[1]["picked"][0])
         self.assertTrue(ctx.state["plan_approved"])
         self.assertEqual(len(ctx.state["rejection_log"]), 2)
 
@@ -124,7 +129,7 @@ class PromptPlaceholderTest(unittest.TestCase):
 
     WRITTEN = {"evidence_need", "evidence_coverage", "evidence_respiratory", "plan", "review",
                "audit", "flyer", "clinic_plan",                       # output_keys
-               "plan_data", "picked_tract_ids", "plan_round",          # plan_saturdays
+               "plan_data", "plan_history", "picked_tract_ids", "plan_round",  # plan_saturdays
                "plan_approved", "review_findings", "excluded_geo_ids",
                "rejection_log"}                                       # check_plan_rules
 

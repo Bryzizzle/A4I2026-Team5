@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinic Plan Console</title>
+<meta name="description" content="Where Fulton County's mobile clinic parks on four Saturdays, why, who the plan lands on, and the flyer for each neighborhood.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Mobile Clinic Plan · Fulton County, GA</h1>
+    <p>One van, four Saturdays: where it parks, why, and who the plan reaches.</p>
+  </div>
+  <div class="actions">
+    <span class="pill" id="status"><span class="dot"></span><span id="status-text">Ready</span></span>
+    <button class="btn primary" id="btn-live">Plan next month</button>
+    <button class="btn" id="btn-replay">Replay last run</button>
+    <select class="btn" id="speed" aria-label="Replay speed">
+      <option value="1">1×</option><option value="4" selected>4×</option><option value="12">12×</option>
+    </select>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- Left: the architecture, live -->
+  <section class="col side">
+    <div class="card">
+      <h2>Agent pipeline <span class="muted" id="elapsed"></span></h2>
+      <div class="body pipeline" id="pipeline">
+        <div class="stage-label">1 · Evidence (in parallel)</div>
+        <div class="stage">
+          <div class="node" data-agent="need_scout"><b>Need scout</b><small>top_need_tracts</small></div>
+          <div class="node" data-agent="coverage_scout"><b>Coverage scout</b><small>county_coverage</small></div>
+          <div class="node" data-agent="respiratory_scout"><b>Respiratory scout</b><small>regional trend</small></div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="stage-label">2 · Plan and review (up to 3 rounds)</div>
+        <div class="loop" id="loop">
+          <div class="loop-head"><span>Round <span class="round" id="round">–</span></span><span id="loop-verdict"></span></div>
+          <div class="stage">
+            <div class="node" data-agent="planner"><b>Planner</b><small>plan_saturdays</small></div>
+            <div class="node" data-agent="reviewer"><b>Reviewer</b><small>check_plan_rules</small></div>
+            <div class="node" data-agent="approval_gate"><b>Gate</b><small>ends loop</small></div>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="stage-label">3 · Audit, explain, report</div>
+        <div class="stage">
+          <div class="node audit" data-agent="auditor"><b>Auditor</b><small>sees demographics</small></div>
+          <div class="node" data-agent="explainer"><b>Explainer</b><small>EN + ES</small></div>
+          <div class="node" data-agent="reporter"><b>Reporter</b><small>Clinic Plan</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Event log <span class="muted" id="event-count"></span></h2>
+      <div class="body log" id="log"><div class="muted">Events appear here as each agent works.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>session.state <span class="muted">writer → readers</span></h2>
+      <div class="body state" id="state"><div class="muted">State keys appear as agents write them.</div></div>
+    </div>
+  </section>
+
+  <!-- Right: the Clinic Plan -->
+  <section class="col">
+    <div class="card">
+      <nav class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="where" aria-selected="true">Where the van goes</button>
+        <button class="tab" role="tab" data-tab="disagree">Where agents disagreed<span class="count badge" id="disagree-count" hidden></span></button>
+        <button class="tab" role="tab" data-tab="cant">What we can't tell</button>
+        <button class="tab" role="tab" data-tab="audit">Who it lands on</button>
+        <button class="tab" role="tab" data-tab="flyer">Flyers</button>
+        <button class="tab" role="tab" data-tab="report">Full report</button>
+      </nav>
+
+      <div class="panel" id="panel-where" role="tabpanel">
+        <div class="empty" id="where-empty">
+          <h3>No plan yet</h3>
+          <p>Press <b>Plan next month</b> to run the agents live (1–3 minutes),<br>or <b>Replay last run</b> to watch a recorded run.</p>
+        </div>
+        <div id="where-content" hidden>
+          <div id="map" role="img" aria-label="Map of Fulton County with the four Saturday stops"></div>
+          <div class="legend">
+            <span><i style="background:var(--accent)"></i>Saturday stop</span>
+            <span><i style="background:var(--bad)"></i>Rejected by the reviewer</span>
+            <span>Circle size: people living in the tract</span>
+          </div>
+          <div class="cal" id="cal"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-disagree" role="tabpanel" hidden>
+        <div class="empty" id="disagree-empty"><h3>Nothing to compare yet</h3><p>Rounds appear here once the reviewer has looked at a plan.</p></div>
+        <div id="disagree-content" hidden></div>
+      </div>
+
+      <div class="panel" id="panel-cant" role="tabpanel" hidden>
+        <div class="empty" id="cant-empty"><h3>Waiting for the scouts</h3></div>
+        <div id="cant-content" hidden>
+          <p class="section-title">Coverage, counted <span class="scale-tag">tract · facility point</span></p>
+          <div class="md" id="cant-coverage"></div>
+          <p class="section-title" style="margin-top:16px">Respiratory illness <span class="scale-tag">multi-county region, never a neighborhood</span></p>
+          <div class="md" id="cant-resp"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-audit" role="tabpanel" hidden>
+        <div class="audit-banner"><b>Auditor only.</b> This compares the plan with Census race, ethnicity and poverty data that the planner and reviewer were never given. The auditor reports; it cannot change the plan, so demographics never become a siting input.</div>
+        <div class="empty" id="audit-empty"><h3>The audit runs after the plan is approved</h3></div>
+        <div class="md" id="audit-content" hidden></div>
+      </div>
+
+      <div class="panel" id="panel-flyer" role="tabpanel" hidden>
+        <div class="toolbar">
+          <div class="lang" role="group" aria-label="Language">
+            <button data-lang="en" aria-pressed="true">English</button>
+            <button data-lang="es" aria-pressed="false">Español</button>
+          </div>
+          <button class="btn" id="btn-print">Print flyers</button>
+        </div>
+        <div class="empty" id="flyer-empty"><h3>The explainer writes these last</h3></div>
+        <div class="flyers" id="flyers"></div>
+      </div>
+
+      <div class="panel" id="panel-report" role="tabpanel" hidden>
+        <div class="empty" id="report-empty"><h3>The reporter assembles the full Clinic Plan at the end</h3></div>
+        <div class="md" id="report-content" hidden></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

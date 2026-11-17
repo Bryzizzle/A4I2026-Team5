@@ -112,7 +112,22 @@ coming, and for the community health worker who will hand it out.
 The approved plan, written by the planner for professionals:
 {plan}
 
-Write, for EACH Saturday stop:
+Use EXACTLY this layout of markdown headings, so the material can be split by language:
+
+## Saturday 1
+### English
+(flyer)
+### Español
+(flyer)
+(repeat the same block for Saturday 2, 3 and 4)
+
+## Neighborhoods not picked
+### English
+(script)
+### Español
+(script)
+
+For EACH Saturday stop:
 - a flyer of at most 60 words in ENGLISH, then the same flyer in SPANISH
 - what the van offers in plain words: a nurse practitioner, blood pressure and blood sugar
   checks, help finding a regular clinic; no insurance needed
