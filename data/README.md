@@ -43,3 +43,53 @@ person, it is an automatic rejection**, however useful it would have been.
 
 Put small reference files here and commit them. Anything large, or anything pulled live, belongs in
 BigQuery rather than in git.
+
+---
+
+## Team 5 data lane: what we built on top of the eight tables
+
+Run once after the notebook or `scripts/load.sh`, from the repo root in Cloud Shell:
+
+```bash
+bash data/run_sql.sh          # validate, then build the views; safe to re-run
+```
+
+| File | Creates | Who may read it |
+|---|---|---|
+| `sql/01_validate.sql` | prints OK / WARN / FAIL checks | everyone |
+| `sql/02_v_van_need.sql` | `v_van_need`: one row per tract with `need_score`, `need_rank`, `top_drivers`, a plain `reason`, raw inputs | **planner** |
+| `sql/03_v_coverage.sql` | `v_coverage`: one row of "what we could not tell you", counted | everyone |
+| `sql/04_v_equity_audit.sql` | `v_equity_audit_base`, `v_equity_audit_top_decile`: tracts joined to Census ACS race and poverty | **auditor only** |
+| `sql/queries/audit_plan.sql` | parameterized audit of a specific plan (`@tract_ids ARRAY<STRING>`) | **auditor only** |
+| `saturdays.py` | `pick_saturdays()`: ranked rows → 4 spaced Saturdays + why each runner-up lost | planner / explainer tool |
+| `column_provenance.csv` | every column → source, scale, measured or modeled | everyone; feed it to the agents |
+
+### What "needs the van" means here (defend this on stage)
+
+`need_score` (0–100) is a weighted mean of **within-county percentile ranks**:
+
+- 60%: who is sick and not being seen
+  - uninsured 18–64 (PLACES): 30%
+  - *low* routine checkup: 15%
+  - chronic burden (diabetes, high BP, COPD, asthma): 15%
+- 20%: straight-line km to the nearest safety-net site
+- 20%: can't get there anyway
+  - no-vehicle households (SVI): 15%
+  - mobility difficulty: 5%
+
+Tracts under 500 people are not scored.
+
+**Left out on purpose:**
+- PM2.5: a 12 km grid, with p90/p10 around 1.05.
+- ED disease trends: these describe a multi-county region.
+- `pct_lack_transport`: NULL in 11 states.
+- HPSA score: empty in most counties.
+- Race: banned as an input, used only in the audit views.
+
+### Rules that keep the architecture honest
+
+- **The planner agent gets `v_van_need` and `v_coverage` only.** The audit views carry race. Giving them to the planner breaks the event rule and our multi-agent argument.
+- **Check `acs_match_rate` in the audit output.** Below about 0.9 means the ACS tract vintage doesn't match PLACES' 2020 tracts. In that case, set `ACS_TABLE` to a newer ACS tract table.
+- **Four tracts is a tiny audit sample.** Always report it next to the top-decile audit.
+
+Local test of the picker (no cloud needed): `cd data && python3 -m unittest test_saturdays`.
