@@ -1,0 +1,166 @@
+# MCP Toolbox for Databases config (flat, multi-document format, Toolbox v1.x).
+# Rendered by agent/run_local.sh / agent/deploy.sh: {{PROJECT}} and {{DATASET}} are filled in.
+#
+# Two toolsets, and the split IS the equity rule:
+#   planner_tools  -> planner-safe views only (no demographic columns anywhere)
+#   auditor_tools  -> the audit views (race, poverty). Only the auditor agent loads these.
+
+kind: source
+name: a4i-bq
+type: bigquery
+project: "{{PROJECT}}"
+location: "US"
+---
+kind: tool
+name: top_need_tracts
+type: bigquery-sql
+source: a4i-bq
+description: |
+  Top census tracts by need_score (0-100, weighted within-county percentile ranks of
+  uninsured 18-64, low checkup, chronic disease, distance to a safety-net site, no vehicle,
+  mobility difficulty). Tract-level. Uninsured and disease values are MODELED (CDC PLACES);
+  distances are straight-line to federally recognized sites only (an upper bound).
+parameters:
+  - name: limit
+    type: integer
+    description: How many tracts to return, highest need first (10-60 is sensible).
+statement: |
+  SELECT need_rank, geo_id, need_score, total_pop,
+         ROUND(pct_uninsured, 1) AS pct_uninsured_18_64,
+         ROUND(pct_no_vehicle, 1) AS pct_no_vehicle,
+         ROUND(km_to_safety_net, 2) AS km_to_safety_net,
+         near_existing_safety_net, components_missing, reason,
+         (SELECT STRING_AGG(FORMAT('%s %.2f', d.driver, d.pctile), ', ')
+          FROM UNNEST(top_drivers) d) AS top_drivers
+  FROM `{{PROJECT}}.{{DATASET}}.v_van_need`
+  WHERE need_score IS NOT NULL
+  ORDER BY need_score DESC
+  LIMIT @limit
+---
+kind: tool
+name: tract_detail
+type: bigquery-sql
+source: a4i-bq
+description: |
+  Every planner-safe column for one census tract (11-character geo_id), including raw inputs,
+  component percentile ranks (0 = best in county, 1 = worst) and the readable reason.
+parameters:
+  - name: geo_id
+    type: string
+    description: 11-character census tract id, e.g. 13121011430.
+statement: |
+  SELECT * EXCEPT (top_drivers),
+         (SELECT STRING_AGG(FORMAT('%s %.2f', d.driver, d.pctile), ', ')
+          FROM UNNEST(top_drivers) d) AS top_drivers
+  FROM `{{PROJECT}}.{{DATASET}}.v_van_need`
+  WHERE geo_id = @geo_id
+---
+kind: tool
+name: county_coverage
+type: bigquery-sql
+source: a4i-bq
+description: |
+  "What we could not tell you", counted: scored vs unscored tracts, safety-net sites, people
+  over 5 km from a safety-net site, shortage designations, disease-data coverage and its
+  multi-county Health Service Area, the PM2.5 spread, and five standing limitations to quote.
+statement: |
+  SELECT * FROM `{{PROJECT}}.{{DATASET}}.v_coverage`
+---
+kind: tool
+name: regional_respiratory_trend
+type: bigquery-sql
+source: a4i-bq
+description: |
+  Recent weekly emergency-department visit percentages for COVID, influenza and RSV.
+  THIS IS A MULTI-COUNTY HEALTH SERVICE AREA FIGURE written onto the county key. It can describe
+  the region; it can never describe a neighborhood or a tract.
+parameters:
+  - name: weeks
+    type: integer
+    description: Number of most recent weeks to return (e.g. 8).
+statement: |
+  SELECT week_end, percent_visits_covid, percent_visits_influenza, percent_visits_rsv,
+         hsa, hsa_counties
+  FROM `{{PROJECT}}.{{DATASET}}.disease_weekly`
+  WHERE percent_visits_covid IS NOT NULL
+     OR percent_visits_influenza IS NOT NULL
+     OR percent_visits_rsv IS NOT NULL
+  ORDER BY week_end DESC
+  LIMIT @weeks
+---
+kind: tool
+name: audit_plan
+type: bigquery-sql
+source: a4i-bq
+description: |
+  AUDITOR ONLY. Compares the people living in the given plan tracts with the whole county, by
+  Census ACS race/ethnicity and poverty plus SVI limited English, age 65+ and no vehicle.
+  Returns county_share, plan_share and ratio_vs_county per group. A handful of tracts is a tiny
+  sample: report it next to audit_top_decile.
+parameters:
+  - name: tract_ids_csv
+    type: string
+    description: Comma-separated 11-character tract ids, e.g. "13121011430,13121006801".
+statement: |
+  WITH ids AS (
+    SELECT TRIM(x) AS geo_id FROM UNNEST(SPLIT(@tract_ids_csv, ',')) x WHERE TRIM(x) != ''
+  ),
+  t AS (
+    SELECT b.*, b.geo_id IN (SELECT geo_id FROM ids) AS selected
+    FROM `{{PROJECT}}.{{DATASET}}.v_equity_audit_base` b
+  ),
+  long AS (
+    SELECT t.selected, g.grp, g.source, g.n, g.denom
+    FROM t,
+    UNNEST([
+      STRUCT('hispanic_pop' AS grp, 'ACS' AS source, CAST(t.hispanic_pop AS FLOAT64) AS n,
+             CAST(t.acs_pop AS FLOAT64) AS denom),
+      STRUCT('black_pop', 'ACS', CAST(t.black_pop AS FLOAT64), CAST(t.acs_pop AS FLOAT64)),
+      STRUCT('white_pop', 'ACS', CAST(t.white_pop AS FLOAT64), CAST(t.acs_pop AS FLOAT64)),
+      STRUCT('asian_pop', 'ACS', CAST(t.asian_pop AS FLOAT64), CAST(t.acs_pop AS FLOAT64)),
+      STRUCT('all other (acs_pop minus the four above)', 'ACS',
+             CAST(t.acs_pop - t.hispanic_pop - t.black_pop - t.white_pop - t.asian_pop AS FLOAT64),
+             CAST(t.acs_pop AS FLOAT64)),
+      STRUCT('below poverty (approx)', 'ACS', CAST(t.poverty AS FLOAT64), CAST(t.acs_pop AS FLOAT64)),
+      STRUCT('limited English', 'SVI', t.pct_limited_english / 100 * t.total_pop, t.total_pop),
+      STRUCT('age 65+', 'SVI', t.pct_age_65_plus / 100 * t.total_pop, t.total_pop),
+      STRUCT('no vehicle', 'SVI', t.pct_no_vehicle / 100 * t.total_pop, t.total_pop)
+    ]) g
+    WHERE g.n IS NOT NULL AND g.denom IS NOT NULL AND g.denom > 0
+  )
+  SELECT
+    grp, source,
+    ROUND(SAFE_DIVIDE(SUM(n), SUM(denom)), 4) AS county_share,
+    ROUND(SAFE_DIVIDE(SUM(IF(selected, n, 0)), SUM(IF(selected, denom, 0))), 4) AS plan_share,
+    ROUND(SAFE_DIVIDE(SAFE_DIVIDE(SUM(IF(selected, n, 0)), SUM(IF(selected, denom, 0))),
+                      SAFE_DIVIDE(SUM(n), SUM(denom))), 2) AS ratio_vs_county,
+    (SELECT COUNTIF(selected) FROM t) AS tracts_found,
+    (SELECT COUNT(*) FROM ids) AS tracts_requested
+  FROM long
+  GROUP BY grp, source
+  ORDER BY source, grp
+---
+kind: tool
+name: audit_top_decile
+type: bigquery-sql
+source: a4i-bq
+description: |
+  AUDITOR ONLY. The same comparison for the top 10% of tracts by need_score: audits the ranking
+  itself on a larger sample. Includes acs_match_rate (below ~0.9 = tract-vintage mismatch, not a
+  finding) and an overlap check (above 1.0 = groups overlap, do not sum shares).
+statement: |
+  SELECT * FROM `{{PROJECT}}.{{DATASET}}.v_equity_audit_top_decile`
+---
+kind: toolset
+name: planner_tools
+tools:
+  - top_need_tracts
+  - tract_detail
+  - county_coverage
+  - regional_respiratory_trend
+---
+kind: toolset
+name: auditor_tools
+tools:
+  - audit_plan
+  - audit_top_decile
