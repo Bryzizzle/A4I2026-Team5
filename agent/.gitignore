@@ -3,3 +3,5 @@ toolbox/tools.yaml
 toolbox/toolbox
 toolbox/toolbox.log
 __pycache__/
+.adk/
+clinic_planner/.adk/
