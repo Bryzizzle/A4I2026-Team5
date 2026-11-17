@@ -18,7 +18,8 @@ SSE messages (all JSON in `data:`), by `event:` name:
 
 Local run (Cloud Shell, after deploy_agent_runtime.sh):
     pip install -r frontend/requirements.txt
-    uvicorn frontend.app:app --host 0.0.0.0 --port 8080      # then Web Preview on 8080
+    uvicorn frontend.app:app --host 0.0.0.0 --port 8080 --loop asyncio   # Web Preview 8080
+    (--loop asyncio: Google's async clients can fail an internal assert under uvloop)
 Record the bundled replay:
     python3 -m frontend.app record "Plan next month's four Saturdays."
 """
@@ -30,6 +31,7 @@ import json
 import os
 import sys
 import time
+import traceback
 from typing import Any, AsyncIterator, Optional
 
 from fastapi import FastAPI, HTTPException
@@ -227,7 +229,10 @@ async def run(req: RunRequest) -> StreamingResponse:
                 with open(LAST_RUN, "w") as f:
                     json.dump(recording, f, default=str)
             except Exception as e:  # surface to the UI instead of a dropped connection
-                yield sse("error", {"message": f"{type(e).__name__}: {e}"})
+                traceback.print_exc()
+                where = traceback.extract_tb(e.__traceback__)[-1]
+                yield sse("error", {"message": f"{type(e).__name__}: {e}",
+                                    "where": f"{where.filename}:{where.lineno} in {where.name}"})
         yield sse("done", {})
 
     return StreamingResponse(with_heartbeat(stream()), media_type="text/event-stream",

@@ -24,7 +24,7 @@ function show(name, data) {
   let line = name;
   if (name === 'agent') line = `${String(d.t).padStart(6)}s ${d.author.padEnd(18)} ${d.kind} ${d.tool || ''} ${d.kind === 'state' ? Object.keys(d.state_delta).join(',') : ''}`;
   if (name === 'final') line = 'final state keys: ' + Object.keys(d.state).join(', ');
-  if (name === 'error') line = 'ERROR ' + d.message;
+  if (name === 'error') line = 'ERROR ' + d.message + (d.where ? '\n  at ' + d.where : '');
   log.textContent += line + '\n'; log.scrollTop = log.scrollHeight;
 }
 async function stream(url, opts) {
