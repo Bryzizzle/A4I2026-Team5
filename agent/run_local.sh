@@ -67,4 +67,8 @@ echo "== Offline tests"
 
 echo "== adk web on :8080. Open Web Preview -> port 8080. Ctrl+C stops both servers."
 cd "${HERE}"
-adk web --host 0.0.0.0 --port 8080
+# Web Preview serves the UI from https://8080-<id>.cloudshell.dev through a proxy, so the browser's
+# Origin never matches the forwarded Host and ADK's origin check answers 403. Allow that domain.
+adk web --host 0.0.0.0 --port 8080 \
+  --allow_origins "regex:https://.*\.cloudshell\.dev" \
+  --allow_origins "regex:https://.*\.cloudshell\.dev:[0-9]+"
