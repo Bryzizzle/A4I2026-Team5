@@ -37,9 +37,9 @@ run() {
   local f="$1"
   echo
   echo "=== $(basename "$f")"
-  bq --project_id="${PROJECT}" --location=US query \
-     --use_legacy_sql=false --max_rows=100 --format=pretty \
-     "$(render "$f")"
+  # Pipe the SQL on stdin: passed as an argument, a leading "-- comment" is parsed as a flag.
+  render "$f" | bq --project_id="${PROJECT}" --location=US query \
+     --use_legacy_sql=false --max_rows=100 --format=pretty
 }
 
 echo "Project: ${PROJECT}   Dataset: ${DATASET}"
