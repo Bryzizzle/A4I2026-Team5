@@ -1,0 +1,5 @@
+clinic_planner/.env
+toolbox/tools.yaml
+toolbox/toolbox
+toolbox/toolbox.log
+__pycache__/

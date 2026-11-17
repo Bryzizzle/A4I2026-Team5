@@ -1,3 +1,67 @@
+# Team 5: the Clinic Plan agents
+
+## Run it (Cloud Shell, from the repo root)
+
+**Prerequisite:** run `bash data/run_sql.sh` once to build the views.
+
+```bash
+bash agent/run_local.sh     # starts MCP Toolbox on :5000, then adk web on :8080
+```
+
+Open **Web Preview → port 8080**, pick `clinic_planner`, and ask: *"Plan next month's four Saturdays."*
+
+- **Deploy to Cloud Run:** `bash agent/deploy.sh`. It deploys two services: a private Toolbox, and the agent with its UI.
+- **Offline tests** (no cloud needed): `cd agent && python -m unittest test_offline`.
+
+## The architecture
+
+```
+clinic_plan (SequentialAgent)
+├── evidence (ParallelAgent)            need_scout | coverage_scout | respiratory_scout
+├── plan_review (LoopAgent, ≤3 rounds)  planner → reviewer → approval_gate
+├── auditor                             sees demographics; never changes the plan
+├── explainer                           English + Spanish, sixth-grade, no numbers
+└── reporter                            the four-part Clinic Plan + "where our agents disagreed"
+```
+
+| Agent | Can use | Writes to state |
+|---|---|---|
+| 3 scouts (in parallel) | Toolbox `planner_tools` | `evidence_need`, `evidence_coverage`, `evidence_respiratory` |
+| planner | our tool `plan_saturdays` and `planner_tools` | `plan`, plus `plan_data`, `picked_tract_ids` and `plan_round` (written by the tool) |
+| reviewer | our tool `check_plan_rules` | `review`, plus `plan_approved`, `excluded_geo_ids` and `rejection_log` (written by the tool) |
+| auditor | Toolbox `auditor_tools` **only** | `audit` |
+| explainer | none | `flyer` |
+| reporter | none | `clinic_plan` |
+
+- **MCP server (Google-managed):** MCP Toolbox for Databases. The config is `toolbox/tools.yaml.tmpl`, which defines 6 named, parameterized BigQuery tools in two toolsets.
+- **Tools we wrote:** `clinic_planner/tools.py`.
+  - `plan_saturdays` wraps `data/saturdays.py`. The agent keeps its own copy at `clinic_planner/saturdays.py`, and a test fails if the two drift apart.
+  - `check_plan_rules` holds the review rules.
+
+## The four judge questions, answered
+
+1. **Delete any one agent: does the answer get worse?**
+   - **Without the reviewer,** Saturday 2 stays on tract `006801`, which was scored with a missing input, and Saturday 4 stays on a 1,050-person tract that is tied with a 3,749-person one.
+   - **Without the auditor,** nobody reports who the plan lands on, or that the flyer must be in Spanish. In the data lane's first-draft audit, Hispanic residents were 4.11× the county share and limited English 3.49×.
+   - **Without the explainer,** the neighborhood gets the planner's hedged, numeric text.
+   - **Without the scouts,** the plan loses the coverage gaps and the regional context.
+2. **A state key written by one agent and read by another.**
+   - **Tool to tool:** `plan_saturdays` writes `plan_data`, and `check_plan_rules` reads it. `check_plan_rules` writes `excluded_geo_ids`, and the next `plan_saturdays` call reads it. A rejection therefore *must* change the next plan.
+   - **Planner to auditor:** `picked_tract_ids` is the only thing the auditor learns about the plan.
+3. **Two agents whose instructions genuinely conflict.** The planner must hedge and label every number with its scale. The explainer is forbidden to use numbers, hedges or words like "modeled". The auditor sees race; the planner and reviewer are forbidden to.
+4. **The point where the system rejected its own first answer.**
+   - **Expected on Fulton,** based on the data lane's first-draft plan: in round 1 the reviewer rejects `006801` in favor of `006802` (complete data, 0.9 km away, 68% no vehicle). It also rejects `006602` in favor of a much larger tied tract.
+   - The planner then revises, and the reporter lists every rejection under "Where our agents disagreed".
+   - `test_offline.py` reproduces this loop on Fulton-shaped data. **Confirm it in the adk web event graph before claiming it in the deck.**
+
+## Why the auditor runs after the loop, not inside it
+
+**The rule:** if audit findings could send the plan back, race would become a planning input through the back door. So the auditor reports and never re-plans, and the planner and reviewer never get the `auditor_tools` toolset.
+
+**How it's enforced:** at the tool level (separate Toolbox toolsets), not just in the prompts. The auditor, explainer and reporter run with `include_contents="none"`, so they see only the state keys named in their instructions.
+
+---
+
 # Your agent goes here
 
 This folder is empty on purpose.
