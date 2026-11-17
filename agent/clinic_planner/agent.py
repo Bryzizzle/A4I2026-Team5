@@ -38,6 +38,11 @@ from . import prompts
 from .tools import check_plan_rules, plan_saturdays
 
 MODEL = os.environ.get("A4I_MODEL", "gemini-3.6-flash")
+
+# On Agent Runtime, GOOGLE_CLOUD_LOCATION is the deployment region (e.g. us-central1), while
+# Gemini 3.x is served from "global". A4I_MODEL_LOCATION lets the model use its own endpoint.
+if os.environ.get("A4I_MODEL_LOCATION"):
+    os.environ["GOOGLE_CLOUD_LOCATION"] = os.environ["A4I_MODEL_LOCATION"]
 TOOLBOX_URL = os.environ.get("TOOLBOX_URL", "http://127.0.0.1:5000")
 
 

@@ -5,3 +5,5 @@ toolbox/toolbox.log
 __pycache__/
 .adk/
 clinic_planner/.adk/
+.agent_runtime.env
+.agent_runtime_id
